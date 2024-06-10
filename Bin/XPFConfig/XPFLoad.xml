@@ -1,0 +1,4 @@
+<?xml vesion="1.0" encoding="UTF-8"?>
+<App>
+    <Plugin Load="1" PluginName="XPFUi" PluginLib="XPFUid"/>
+</App>
