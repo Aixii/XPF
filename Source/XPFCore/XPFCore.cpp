@@ -73,6 +73,10 @@ bool XPFCore::load() {
             return ret;
         }
     }
+
+    // 加载插件
+    loadPlugins();
+
     ret = true;
     return ret;
 
@@ -99,4 +103,9 @@ bool XPFCore::isAlreadyRunning()
     }
 
     return false;
+}
+
+bool XPFCore::loadPlugins()
+{
+
 }

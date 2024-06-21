@@ -23,6 +23,7 @@ QMAKE_POST_LINK += $$QMAKE_COPY \"$$DESTFILE_PATH\\$$TARGET$$TARGET_EXT\"  \"$$E
 
 HEADERS += \
     $$XPFDIR_SRC/interface/IXPFPlugin.h \
+    $$XPFDIR_SRC/include/IXPFPluginHelper.h \
     $$XPFDIR_SRC/include/XPFGlobal.h \
     XPFCore.h \
 

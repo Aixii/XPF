@@ -17,7 +17,10 @@ public:
 
 private:
     bool isAlreadyRunning();
-
+    /**
+     * @brief loadPlugins 加载插件
+     */
+    void loadPlugins();
 private:
     // 应用配置
     QVariantMap m_Config;

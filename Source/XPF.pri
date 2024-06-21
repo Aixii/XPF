@@ -17,3 +17,4 @@ UI_DIR      = $$DESTDIR/ui
 
 INCLUDEPATH += $$XPFDIR_SRC/interface
 INCLUDEPATH += $$XPFDIR_SRC/include
+

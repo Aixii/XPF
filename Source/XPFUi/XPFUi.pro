@@ -6,6 +6,12 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 CONFIG += c++11
 
+TEMPLATE = lib
+
+CONFIG += plugin shared
+
+TARGET = XPFUiPlugind
+
 # 拷贝命令
 win32:QMAKE_COPY = copy
 unix:QMAKE_COPY = cp
