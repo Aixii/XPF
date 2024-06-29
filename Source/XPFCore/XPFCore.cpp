@@ -8,6 +8,9 @@
 #include <QLocalSocket>
 #include <QLocalServer>
 
+const static char *xpf_core_xml_filename = "./XPFConfig/XPF.xml";
+const static char *xpf_core_pluginload_xml_filename = "./XPFConfig/XPFLoad.xml";
+
 XPFCore::XPFCore() {
 
 }
@@ -15,7 +18,7 @@ XPFCore::XPFCore() {
 bool XPFCore::load() {
     bool ret = false;
     QDomDocument doc("XPFConfig");
-    QFile file("./XPFConfig/XPF.xml");
+    QFile file(QString(xpf_core_xml_filename));
     if(!file.exists())
     {
         XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_NOEXISTS);
@@ -105,7 +108,14 @@ bool XPFCore::isAlreadyRunning()
     return false;
 }
 
-bool XPFCore::loadPlugins()
+void XPFCore::loadPlugins()
 {
-
+    QDomDocument doc("load_config");
+    QFile file(QString(xpf_core_pluginload_xml_filename));
+    if(file.exists())
+    {
+        doc.setContent(file.readAll());
+    }
+    QDomElement root = doc.documentElement();
 }
+
