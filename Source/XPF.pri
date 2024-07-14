@@ -18,8 +18,8 @@ UI_DIR      = $$DESTDIR/ui
 INCLUDEPATH += $$XPFDIR_SRC/interface
 INCLUDEPATH += $$XPFDIR_SRC/include
 
-HEADERS += \
-    $$PWD/include/Singleton.h \
-    $$PWD/include/IXPFPluginHelper.h \
-    $$PWD/include/XPFGlobal.h
+#HEADERS += \
+#    $$PWD/include/Singleton.h \
+#    $$PWD/include/IXPFPluginHelper.h \
+#    $$PWD/include/XPFGlobal.h
 

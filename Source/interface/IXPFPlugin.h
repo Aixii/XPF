@@ -2,6 +2,7 @@
 #define IXPFPLUGIN_H
 
 #include <QObject>
+class IXPFPluginHelper;
 
 class IXPFPlugin
 {
@@ -9,7 +10,7 @@ public:
     IXPFPlugin() { }
     virtual ~IXPFPlugin() { }
 
-    virtual void initPlugin() = 0;
+    virtual void initPlugin(IXPFPluginHelper *pluginHelper) = 0;
 
     virtual void initBeforePlugin() = 0;
 

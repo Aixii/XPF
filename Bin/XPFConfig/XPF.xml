@@ -3,4 +3,21 @@
     <AppID base="16">1</AppID>
     <AppName>XPF</AppName>
     <MultiStart>0</MultiStart>
+    <!-- App 模式 0:无界面 1:单屏 2:双屏-->
+    <AppScreens>
+        <Screen>
+            <id>0</id>
+            <size>
+                <width>640</width>
+                <height>480</height>
+            </size>
+        </Screen>
+        <Screen>
+            <id>1</id>
+            <size>
+                <width>640</width>
+                <height>480</height>
+            </size>
+        </Screen>
+    </AppScreens>
 </App>

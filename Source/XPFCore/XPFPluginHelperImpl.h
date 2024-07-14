@@ -2,11 +2,24 @@
 #define XPFPLUGINHELPERIMPL_H
 
 #include "IXPFPluginHelper.h"
+#include <QMap>
+#include <QLinkedList>
+#include <QVariant>
 
+namespace XPF {
+class XPFPluginHelperImplPrivate;
+}
+
+class XPFCore;
 
 class XPFPluginHelperImpl : public IXPFPluginHelper
 {
+public:
+    XPFPluginHelperImpl();
+    ~XPFPluginHelperImpl();
 
+    QList<QWidget*> getScreens();
+    void setXPFScreenWidget(int screenID, QWidget *widget);
 
     // IXPFPluginHelper interface
 public:
@@ -16,7 +29,12 @@ public:
 
     void subMessage(IXPFPlugin *plugin, uint32_t msgid) override;
     void unsubMessage(IXPFPlugin *plugin, uint32_t msgid) override;
-    void pubMessage(uint32_t msgid, const QVariant &param) override;
+    void sendMessage(uint32_t msgid, const QVariant &param = QVariant(), IXPFPlugin *sender = nullptr) override;
+    void sendSyncMessage(uint32_t msgid, const QVariant &param = QVariant(), IXPFPlugin *sender = nullptr) override;
+    QWidget *getXPFScreenWidget(int screenID) override;
+
+private:
+    XPF::XPFPluginHelperImplPrivate *m_Private;
 };
 
 

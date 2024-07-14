@@ -4,7 +4,8 @@ TEMPLATE = subdirs
 
 SUBDIRS += \
     XPFCore \
-    XPFUi \
+#    XPFHelper \
+#    XPFUi \
 
 
 

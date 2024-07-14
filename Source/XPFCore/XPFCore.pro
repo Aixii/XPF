@@ -22,11 +22,16 @@ QMAKE_POST_LINK += $$QMAKE_COPY \"$$DESTFILE_PATH\\$$TARGET$$TARGET_EXT\"  \"$$E
 }
 
 HEADERS += \
+    Private/MessageSenderPrivate.h \
+    Private/XPFPluginHelperImplPrivate.h \
     XPFCore.h \
-    XPFPluginHelperImpl.h
+    XPFPluginHelperImpl.h \
+    ../include/XPFDef.h
 
 
 SOURCES += main.cpp \
+    Private/MessageSenderPrivate.cpp \
+    Private/XPFPluginHelperImplPrivate.cpp \
     XPFCore.cpp \
     XPFGlobal.cpp \
     XPFPluginHelperImpl.cpp

@@ -1,6 +1,7 @@
 #define XPFGLOBAL_CPP
 
 #include "XPFGlobal.h"
+#include "XPFCore.h"
 #include <QMap>
 #include <QTranslator>
 #include <QString>

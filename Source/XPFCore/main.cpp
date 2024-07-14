@@ -18,6 +18,9 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    // 加载完成之后显示界面
+    core->showScreens();
+
     // 进入事件循环
     app.exec();
 
