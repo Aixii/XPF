@@ -1,25 +1,21 @@
 #include "XPFCore.h"
 #include "XPFGlobal.h"
 #include <QApplication>
-#include <QString>
+#include <QFileInfo>
 #include <QMessageBox>
+#include <QString>
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    XPFCore *core = new XPFCore;
+    XPFCore* core = new XPFCore;
 
-    if(!core->load())
-    {
-        QMessageBox::critical(nullptr, QObject::tr(u8"错误"), XPF::xpf_err_msg, QMessageBox::Close);
-        delete core;
-        core = nullptr;
-        return -1;
-    }
+    core->initialize();
 
     // 加载完成之后显示界面
     core->showScreens();
+
+    QObject::connect(core, &XPFCore::sigQuitApp, &app, &QApplication::quit);
 
     // 进入事件循环
     app.exec();

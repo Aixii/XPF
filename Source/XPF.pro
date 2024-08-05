@@ -3,9 +3,11 @@ include (./XPF.pri)
 TEMPLATE = subdirs
 
 SUBDIRS += \
+    XPFLauncher \
     XPFCore \
-#    XPFHelper \
-#    XPFUi \
+    XPFUi \
+    XPFTrayMenuPlugin \
+#    XPFCreatePluginTool \
 
 
 

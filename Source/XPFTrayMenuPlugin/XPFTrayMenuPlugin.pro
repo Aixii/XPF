@@ -11,20 +11,24 @@ TEMPLATE = lib
 CONFIG += plugin
 
 CONFIG(debug, debug|release){
-    TARGET = XPFUiPlugind
+    TARGET = XPFTrayMenuPlugind
 } else {
-    TARGET = XPFUiPlugin
+    TARGET = XPFTrayMenuPlugin
 }
 
 DESTDIR = $$DESTDIR/XPFPlugins
 
+INCLUDEPATH += Widgets
+
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
-    XPFUiPlugin.h \
-    XPFUiTool.h
+    Widgets/TrayIconRClickWgt.h \
+    XPFTrayMenuPlugin.h \
+
 
 SOURCES += \
-    XPFUiPlugin.cpp \
-    XPFUiTool.cpp
+    Widgets/TrayIconRClickWgt.cpp \
+    XPFTrayMenuPlugin.cpp \
 
-FORMS +=
+FORMS += \
+    Widgets/TrayIconRClickWgt.ui

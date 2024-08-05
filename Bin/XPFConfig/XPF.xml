@@ -1,23 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <App>
-    <AppID base="16">1</AppID>
+    <AppID base="16">0x1</AppID>
     <AppName>XPF</AppName>
-    <MultiStart>0</MultiStart>
-    <!-- App 模式 0:无界面 1:单屏 2:双屏-->
+    <MultiStart>false</MultiStart>
     <AppScreens>
-        <Screen>
-            <id>0</id>
-            <size>
-                <width>640</width>
-                <height>480</height>
-            </size>
+        <Screen size="0:0" fullscreen="true">
+            <ID base="10">0</ID>
+            <Name>主屏幕</Name>
+            <WidgetHeader height="30">header0</WidgetHeader>
+            <WidgetBody>screen0</WidgetBody>
         </Screen>
-        <Screen>
-            <id>1</id>
-            <size>
-                <width>640</width>
-                <height>480</height>
-            </size>
+        <Screen size="640:480" fullscreen="false">
+            <ID>1</ID>
+            <Name>屏幕2</Name>
+            <WidgetBody>screen1</WidgetBody>
         </Screen>
     </AppScreens>
+    <!-- 是否开启任务栏托盘 -->
+    <TrayIcon enable="true" />
 </App>

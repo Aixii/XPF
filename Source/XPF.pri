@@ -4,22 +4,21 @@ XPFDIR = $$absolute_path(..)
 XPFDIR_BIN = $$XPFDIR/Bin
 XPFDIR_SRC = $$XPFDIR/Source
 
+DESTDIR = $$XPFDIR/Bin
 CONFIG(debug, debug|release){
-    DESTDIR = $$XPFDIR/Debug
-}else{
-    DESTDIR = $$XPFDIR/Release
+    OBJECTS_DIR = $$XPFDIR/Debug/obj
+    MOC_DIR     = $$XPFDIR/Debug/moc
+    RCC_DIR     = $$XPFDIR/Debug/rcc
+    UI_DIR      = $$XPFDIR/Debug/ui
+} else {
+    OBJECTS_DIR = $$XPFDIR/Release/obj
+    MOC_DIR     = $$XPFDIR/Release/moc
+    RCC_DIR     = $$XPFDIR/Release/rcc
+    UI_DIR      = $$XPFDIR/Release/ui
 }
 
-OBJECTS_DIR = $$DESTDIR/obj
-MOC_DIR     = $$DESTDIR/moc
-RCC_DIR     = $$DESTDIR/rcc
-UI_DIR      = $$DESTDIR/ui
-
-INCLUDEPATH += $$XPFDIR_SRC/interface
 INCLUDEPATH += $$XPFDIR_SRC/include
 
-#HEADERS += \
-#    $$PWD/include/Singleton.h \
-#    $$PWD/include/IXPFPluginHelper.h \
-#    $$PWD/include/XPFGlobal.h
-
+# 拷贝命令
+win32:  QMAKE_COPY = copy
+unix:   QMAKE_COPY = cp

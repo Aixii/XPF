@@ -1,4 +1,7 @@
-<?xml vesion="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <App>
-    <Plugin enable="1" plugin_name="XPFUi" plugin_lib="XPFUid"/>
+    <Plugins>
+        <Plugin enable="1" plugin_name="XPFUi" plugin_lib="XPFUiPlugind"/>
+        <Plugin enable="1" plugin_name="XPFTrayMenuPlugin" plugin_lib="XPFTrayMenuPlugind"/>
+    </Plugins>
 </App>
