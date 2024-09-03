@@ -191,16 +191,22 @@ bool XPFCore::initialize() {
         widget->setLayout(layout);
 
         if (!widget->property("Header").toString().isEmpty()) {
-            QWidget* cwhead  = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Header").toString());
-            quint32  hedaerh = widget->property("HeaderHeight").toUInt();
-            cwhead->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-            cwhead->setFixedHeight(hedaerh);
-            layout->addWidget(cwhead);
+            QWidget* cwhead = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Header").toString());
+            if (cwhead != nullptr) {
+                quint32 headerh = widget->property("HeaderHeight").toUInt();
+                cwhead->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+                cwhead->setFixedHeight(headerh);
+                layout->addWidget(cwhead);
+            } else {
+                widget->setWindowFlags(widget->windowFlags() & ~Qt::FramelessWindowHint);
+            }
         }
 
         if (!widget->property("Body").toString().isEmpty()) {
             QWidget* cwbody = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Body").toString());
-            layout->addWidget(cwbody);
+            if (cwbody != nullptr) {
+                layout->addWidget(cwbody);
+            }
         }
     }
 
@@ -271,7 +277,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
     if (!em.isNull()) {
         QDomNodeList list = em.elementsByTagName("Screen");
 
-        int screenCount;
+        int screenCount = 0;
         if (list.size() >= 0) {
             screenCount = QApplication::desktop()->screenCount();
         }
@@ -295,7 +301,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
                     continue;
                 }
                 int base = e.attribute("base").toInt();
-                if (base != 16 || base != 8 || base != 2) {
+                if (base != 16 && base != 8 && base != 2) {
                     base = 10;
                 }
 
@@ -425,13 +431,15 @@ void XPFCore::loadPlugins() {
         QString plugin_lib  = plugin_em.attribute("plugin_lib");
         int     enable      = plugin_em.attribute("enable").toInt();
 
+#if defined(_WIN32)
         QPluginLoader* loader = new QPluginLoader(QString("./XPFPlugins/%0.dll").arg(plugin_lib));
-
+#elif defined(UNIX)
+        QPluginLoader* loader = new QPluginLoader(QString("./XPFPlugins/%0.so").arg(plugin_lib));
+#endif
         QObject* obj = loader->instance();
         if (obj) {
             IXPFPlugin* plugin = qobject_cast<IXPFPlugin*>(obj);
             if (plugin != nullptr) {
-
                 if (enable == 0) {
                     loader->unload();
                 }

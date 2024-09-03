@@ -1,15 +1,19 @@
 #include <iostream>
 #include <string.h>
+
+#ifdef _WIN32
 #include <windows.h>
+#endif
 
 int main(int argc, char* argv[]) {
+#ifdef _WIN32
     (void)argc;
     (void)argv;
 
-    // è·å–å½“å‰çš„ PATH
+    // »ñÈ¡µ±Ç°µÄ PATH
     const char* oldPath = std::getenv("PATH");
 
-    // è®¾ç½®æ–°çš„ PATH
+    // ÉèÖÃĞÂµÄ PATH
     std::string newPathR = "..\\Libs";
 
     char absolutePath[MAX_PATH];
@@ -42,7 +46,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // å¯åŠ¨ç›®æ ‡ç¨‹åº
+    // Æô¶¯Ä¿±ê³ÌĞò
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
     ZeroMemory(&si, sizeof(si));
@@ -53,22 +57,22 @@ int main(int argc, char* argv[]) {
     si.wShowWindow = SW_SHOW;
 
     std::string cmd = ".\\XPF.exe";
+   
+    //int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, cmd.c_str(), -1, NULL, 0);
 
-    int sizeNeeded = MultiByteToWideChar(CP_UTF8, 0, cmd.c_str(), -1, NULL, 0);
+    //std::wstring wideStr(sizeNeeded, 0);
+    //MultiByteToWideChar(CP_UTF8, 0, cmd.c_str(), -1, &wideStr[0], sizeNeeded);
 
-    std::wstring wideStr(sizeNeeded, 0);
-    MultiByteToWideChar(CP_UTF8, 0, cmd.c_str(), -1, &wideStr[0], sizeNeeded);
-
-    if (!CreateProcess(nullptr, const_cast<wchar_t*>(wideStr.c_str()),
+    if (!CreateProcess(nullptr, /*const_cast<wchar_t*>(wideStr.c_str())*/const_cast<char*>(cmd.c_str()),
                        nullptr, nullptr, FALSE, 0, nullptr, nullptr, &si, &pi)) {
         MessageBox(nullptr, TEXT("Failed to start process"), TEXT("Error"), MB_OK | MB_ICONERROR);
         return 1;
     }
 
-    // ç­‰å¾…ç›®æ ‡ç¨‹åºé€€å‡º
+    // µÈ´ıÄ¿±ê³ÌĞòÍË³ö
     WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);
-
+#endif
     return 0;
 }

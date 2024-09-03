@@ -11,7 +11,7 @@ XPFUiTool::~XPFUiTool() {
 }
 
 QWidget* XPFUiTool::generateWidget(const QString& fileName) {
-    QWidget* widget = new QWidget;
+    QWidget* widget = nullptr;
     do {
         QDomDocument doc("x");
         QFile        file(fileName);
@@ -31,10 +31,6 @@ QWidget* XPFUiTool::generateWidget(const QString& fileName) {
             break;
         }
 
-        QLayout* layout = new QHBoxLayout(widget);
-        layout->setContentsMargins(0, 0, 0, 0);
-        widget->setLayout(layout);
-
         QDomElement mainElement = root.firstChildElement("Widgets");
         if (mainElement.isNull()) {
             QMessageBox::warning(nullptr,
@@ -43,6 +39,12 @@ QWidget* XPFUiTool::generateWidget(const QString& fileName) {
                                  QObject::tr(u8"知道了"));
             break;
         }
+
+        widget = new QWidget();
+
+        QLayout* layout = new QHBoxLayout(widget);
+        layout->setContentsMargins(0, 0, 0, 0);
+        widget->setLayout(layout);
 
         QWidget* w = createUi(mainElement);
         layout->addWidget(w);
