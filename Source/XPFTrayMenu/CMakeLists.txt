@@ -11,8 +11,6 @@ file(GLOB_RECURSE PRO_SRC ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp)
 file(GLOB_RECURSE PRO_HED ${CMAKE_CURRENT_SOURCE_DIR}/*.h)
 file(GLOB_RECURSE PRO_UI  ${CMAKE_CURRENT_SOURCE_DIR}/*.ui)
 
-message(STATUS ${PRO_SRC})
-
 if(WIN32)
 	source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Source Files" FILES ${PRO_SRC})
 	source_group(TREE ${CMAKE_CURRENT_SOURCE_DIR} PREFIX "Header Files" FILES ${PRO_HED})
@@ -34,7 +32,6 @@ add_library(${TARGET_NAME} SHARED ${PRO_SRC} ${PRO_HED} ${PRO_UI})
 target_include_directories(${TARGET_NAME} PRIVATE "./Widgets")
 
 target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
-#target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Network)
 target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_VERSION_MAJOR}::Xml)
 
 add_custom_command(TARGET ${TARGET_NAME} POST_BUILD 
