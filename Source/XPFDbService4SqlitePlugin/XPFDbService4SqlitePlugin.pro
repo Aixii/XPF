@@ -1,8 +1,9 @@
 
-include (../XPF.pri)
 
-QT += core gui xml network
+QT += core gui xml network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
+include (../XPF.pri)
 
 CONFIG += c++11
 
@@ -20,10 +21,16 @@ DESTDIR = $$DESTDIR/XPFPlugins
 
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
-    XPFLoginPlugin.h \
+    SqlResult.h \
+    SqlResultPrivate.h \
+    XPFDbService4SqlitePlugin.h \
+    XPFDbServiceImpl.h
 
 SOURCES += \
-    XPFLoginPlugin.cpp \
+    SqlResult.cpp \
+    SqlResultPrivate.cpp \
+    XPFDbService4SqlitePlugin.cpp \ \
+    XPFDbServiceImpl.cpp
 
 FORMS +=
 

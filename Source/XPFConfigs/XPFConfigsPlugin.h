@@ -4,15 +4,15 @@
 #include "IXPFPlugin.h"
 #include <QObject>
 
-class XPFUiPlugin
+class XPFConfigsPlugin
     : public QObject
     , public IXPFPlugin {
     Q_OBJECT
     Q_INTERFACES(IXPFPlugin)
     Q_PLUGIN_METADATA(IID IXPFPlugin_IID)
 public:
-    XPFUiPlugin();
-    ~XPFUiPlugin();
+    XPFConfigsPlugin();
+    ~XPFConfigsPlugin();
 
     // IXPFPlugin interface
 public:
@@ -22,6 +22,6 @@ public:
     void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
 
     QWidget* getWidget(const QString& WID) override;
-    QString  getPluginName() override;
+    QString  getPluginName();
 };
 #endif // XPFUIPLUGIN_H

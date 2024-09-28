@@ -1,4 +1,4 @@
-#ifndef XPFPLUGINHELPERIMPL_H
+﻿#ifndef XPFPLUGINHELPERIMPL_H
 #define XPFPLUGINHELPERIMPL_H
 
 #include "IXPFPluginHelper.h"
@@ -25,10 +25,14 @@ public:
     QString getXPFBinDir() override;
     QString getXPFBinConfigDir() override;
 
-    void subMessage(IXPFPlugin* plugin, uint32_t msgid) override;
-    void unsubMessage(IXPFPlugin* plugin, uint32_t msgid) override;
-    void sendMessage(uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
-    void sendSyncMessage(uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+    void subMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid) override;
+    void unsubMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid) override;
+    void sendMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+    void sendSyncMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+
+    bool registerService(const QString& name, IXPFService* servicePtr) override;
+
+    IXPFService* getService(const QString& name) override;
 
     QWidget* getXPFScreenWidget(int screenID) override;
     QWidget* getXPFWidgetById(int screenID, const QString& id) override;

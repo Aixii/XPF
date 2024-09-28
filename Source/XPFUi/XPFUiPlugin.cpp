@@ -1,4 +1,4 @@
-#include "XPFUiPlugin.h"
+﻿#include "XPFUiPlugin.h"
 #include "IXPFPluginHelper.h"
 #include "XPFUiTool.h"
 
@@ -25,10 +25,14 @@ QWidget* XPFUiPlugin::getWidget(const QString& WID) {
     return widget;
 }
 
+QString XPFUiPlugin::getPluginName() {
+    return QString("XPFUiPlugin");
+}
+
 void XPFUiPlugin::release() {
 }
 
-void XPFUiPlugin::onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+void XPFUiPlugin::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     Q_UNUSED(msgid)
     Q_UNUSED(param)
     Q_UNUSED(sender)

@@ -1,7 +1,9 @@
 ﻿#include "XPFCore.h"
-#include "XPFDef.h"
+#include "XPFCoreDef.h"
 #include "XPFGlobal.h"
 #include "XPFPluginHelperImpl.h"
+#include "XPFTopicDef.h"
+#include "XPFTrayMenuPluginDef.h"
 #include <QAction>
 #include <QApplication>
 #include <QDesktopWidget>
@@ -15,6 +17,7 @@
 #include <QMenu>
 #include <QMessageBox>
 #include <QPluginLoader>
+#include <QScreen>
 #include <QSharedMemory>
 #include <QSystemTrayIcon>
 
@@ -67,7 +70,7 @@ bool XPFCore::load(const QString& fileName) {
         }
 
         QString content = file.readAll();
-        qDebug() << content;
+
         if (!doc.setContent(content, false, &content)) {
             XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
             file.close();
@@ -216,24 +219,24 @@ bool XPFCore::initialize() {
 
     // 托盘基础菜单
     if (m_TrayIcon != nullptr) {
-
+        using namespace XPFTrayMenu;
         auto func = [this](QSystemTrayIcon::ActivationReason reason) {
             switch (reason) {
             // 左键
             case QSystemTrayIcon::Trigger:
-                m_XPFHelper->sendSyncMessage(XPF_MSG_ID_SYS_TRAY_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
+                m_XPFHelper->sendSyncMessage(TOPIC_TrayMenu, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
                 break;
             // 右键单击
             case QSystemTrayIcon::Context:
-                m_XPFHelper->sendSyncMessage(XPF_MSG_ID_SYS_TRAY_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
+                m_XPFHelper->sendSyncMessage(TOPIC_TrayMenu, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
                 break;
             // 双击
             case QSystemTrayIcon::DoubleClick:
-                m_XPFHelper->sendSyncMessage(XPF_MSG_ID_SYS_TRAY_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
+                m_XPFHelper->sendSyncMessage(TOPIC_TrayMenu, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
                 break;
             // 中键单击
             case QSystemTrayIcon::MiddleClick:
-                m_XPFHelper->sendSyncMessage(XPF_MSG_ID_SYS_TRAY_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
+                m_XPFHelper->sendSyncMessage(TOPIC_TrayMenu, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
                 break;
             default:
                 break;
@@ -282,7 +285,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
 
         int screenCount = 0;
         if (list.size() >= 0) {
-            screenCount = QApplication::desktop()->screenCount();
+            screenCount = QApplication::screens().size();
         }
         int desktopIndex = 0;
         for (int index = 0; index < list.size(); index++, desktopIndex++) {
@@ -296,7 +299,8 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
             if (index >= screenCount) {
                 desktopIndex = 0;
             }
-            QRect rect = QApplication::desktop()->screenGeometry(desktopIndex);
+
+            QRect rect = QApplication::screens().at(desktopIndex)->availableGeometry();
             {
                 QDomElement e = element.firstChildElement("ID");
 

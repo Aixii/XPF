@@ -1,4 +1,4 @@
-#ifndef XPFPLUGINHELPERIMPLPRIVATE_H
+﻿#ifndef XPFPLUGINHELPERIMPLPRIVATE_H
 #define XPFPLUGINHELPERIMPLPRIVATE_H
 
 #include "IXPFPlugin.h"
@@ -7,6 +7,7 @@
 #include "XPFPluginHelperImpl.h"
 #include <QLinkedList>
 #include <QMap>
+#include <QMutex>
 #include <QObject>
 
 namespace XPF {
@@ -24,17 +25,21 @@ public:
 
 signals:
     // 发送异步消息
-    void sigSendAsyncMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender);
+    void sigSendAsyncMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender);
 
     // IXPFPluginHelper interface
 public:
     QString getXPFBinDir() override;
     QString getXPFBinConfigDir() override;
 
-    void subMessage(IXPFPlugin* plugin, uint32_t msgid) override;
-    void unsubMessage(IXPFPlugin* plugin, uint32_t msgid) override;
-    void sendMessage(uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
-    void sendSyncMessage(uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+    void subMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid = 0) override;
+    void unsubMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid = 0) override;
+    void sendMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+    void sendSyncMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+
+    bool registerService(const QString& name, IXPFService* servicePtr) override;
+
+    IXPFService* getService(const QString& name) override;
 
     QWidget* getXPFScreenWidget(int screenID) override;
     QWidget* getXPFWidgetById(int screenID, const QString& id) override;
@@ -44,13 +49,18 @@ public:
 
 private:
     // 消息订阅关系
-    QMap<uint32_t, QLinkedList<IXPFPlugin*>> m_MsgSubscribes;
+    QMap<QString, QMap<uint32_t, QLinkedList<IXPFPlugin*>>> m_MsgSubscribes;
+    //    QMap<uint32_t, QLinkedList<IXPFPlugin*>> m_MsgSubscribes;
     // 消息发送线程
     QThread* m_MsgSendThread;
     // 消息发送者
     XPF::MessageSenderPrivate* m_MsgSender;
     // 所有屏幕窗口
     QMap<int, QWidget*> m_ScreenWidgets;
+
+    QMap<QString, IXPFService*> m_Services;
+
+    QMutex* m_ServicesMutex;
 };
 
 }

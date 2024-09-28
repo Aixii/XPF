@@ -18,4 +18,13 @@ CONFIG(debug, debug|release){
 }
 
 INCLUDEPATH += $$XPFDIR_SRC/include
+INCLUDEPATH += $$XPFDIR_SRC/include/Define
+INCLUDEPATH += $$XPFDIR_SRC/include/Service
+
+HEADERS += \
+    $$PWD/include/IXPFPlugin.h \
+    $$PWD/include/IXPFPluginHelper.h \
+    $$PWD/include/IXPFService.h \
+    $$PWD/include/Define/XPFTopicDef.h \
+    $$PWD/include/Service/IXPFDbService
 

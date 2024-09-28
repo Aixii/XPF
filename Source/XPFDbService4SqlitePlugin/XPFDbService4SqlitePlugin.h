@@ -1,18 +1,17 @@
-﻿#ifndef XPFUIPLUGIN_H
-#define XPFUIPLUGIN_H
+﻿#pragma once
 
 #include "IXPFPlugin.h"
 #include <QObject>
 
-class XPFUiPlugin
+class XPFDbService4SqlitePlugin
     : public QObject
     , public IXPFPlugin {
     Q_OBJECT
     Q_INTERFACES(IXPFPlugin)
     Q_PLUGIN_METADATA(IID IXPFPlugin_IID)
 public:
-    XPFUiPlugin();
-    ~XPFUiPlugin();
+    XPFDbService4SqlitePlugin();
+    ~XPFDbService4SqlitePlugin();
 
     // IXPFPlugin interface
 public:
@@ -24,4 +23,3 @@ public:
     QWidget* getWidget(const QString& WID) override;
     QString  getPluginName() override;
 };
-#endif // XPFUIPLUGIN_H

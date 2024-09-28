@@ -1,6 +1,7 @@
-#include "TrayIconRClickWgt.h"
+﻿#include "TrayIconRClickWgt.h"
 #include "IXPFPluginHelper.h"
-#include "XPFDef.h"
+#include "XPFCoreDef.h"
+#include "XPFTopicDef.h"
 #include "ui_TrayIconRClickWgt.h"
 #include <QEvent>
 #include <QFocusEvent>
@@ -78,7 +79,7 @@ bool TrayIconRClickWgt::eventFilter(QObject* watched, QEvent* event) {
             if (label) {
                 QRegExp reg("^(screen_)\\d+");
                 if (label->objectName() == "quit") {
-                    g_pPluginHelper->sendSyncMessage(XPF_MSG_ID_QUIT_APP);
+                    g_pPluginHelper->sendSyncMessage(TOPIC_Core, XPF_Core::MSG_ID_QUIT_APP);
                 }
                 else if (reg.exactMatch(label->objectName())) {
                     int id = label->property("ID").toInt();

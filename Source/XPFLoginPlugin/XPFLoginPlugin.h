@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "IXPFPlugin.h"
 #include <QObject>
@@ -15,9 +15,11 @@ public:
 
     // IXPFPlugin interface
 public:
-    void     initPlugin(IXPFPluginHelper* pluginHelper) override;
-    void     initAfterPlugin() override;
-    void     release() override;
-    void     onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
+    void initPlugin(IXPFPluginHelper* pluginHelper) override;
+    void initAfterPlugin() override;
+    void release() override;
+    void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
+
     QWidget* getWidget(const QString& WID) override;
+    QString  getPluginName();
 };

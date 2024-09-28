@@ -21,10 +21,13 @@ QWidget* XPFLoginPlugin::getWidget(const QString& WID) {
     return Q_NULLPTR;
 }
 
+QString XPFLoginPlugin::getPluginName() {
+}
+
 void XPFLoginPlugin::release() {
 }
 
-void XPFLoginPlugin::onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+void XPFLoginPlugin::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     Q_UNUSED(msgid)
     Q_UNUSED(param)
     Q_UNUSED(sender)
