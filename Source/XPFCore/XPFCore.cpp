@@ -1,4 +1,4 @@
-#include "XPFCore.h"
+﻿#include "XPFCore.h"
 #include "XPFDef.h"
 #include "XPFGlobal.h"
 #include "XPFPluginHelperImpl.h"
@@ -55,7 +55,8 @@ bool XPFCore::load(const QString& fileName) {
     do {
         /* 读配置文件 */
         QDomDocument doc("XPFCoreConfig");
-        QFile        file(fileName);
+
+        QFile file(fileName);
         if (!file.exists()) {
             XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_NOEXISTS);
             break;
@@ -66,6 +67,7 @@ bool XPFCore::load(const QString& fileName) {
         }
 
         QString content = file.readAll();
+        qDebug() << content;
         if (!doc.setContent(content, false, &content)) {
             XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
             file.close();
@@ -92,7 +94,8 @@ bool XPFCore::load(const QString& fileName) {
             m_Config[STR_XPF_APPNAME] = appName;
         }
 
-        em          = root.firstChildElement("MultiStart");
+        em = root.firstChildElement("MultiStart");
+
         bool enable = (em.text() == "true");
         if (enable) {
             m_Config[STR_XPF_MULTISTART_ENABLE] = true;
@@ -197,7 +200,8 @@ bool XPFCore::initialize() {
                 cwhead->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
                 cwhead->setFixedHeight(headerh);
                 layout->addWidget(cwhead);
-            } else {
+            }
+            else {
                 widget->setWindowFlags(widget->windowFlags() & ~Qt::FramelessWindowHint);
             }
         }
@@ -269,8 +273,7 @@ bool XPFCore::isAlreadyRunning() {
 }
 
 bool XPFCore::parseScreenXml(const QDomElement& em) {
-    auto setFullScreen = [](QWidget* widget, int desktopIndex) {
-        widget->setGeometry(QApplication::desktop()->screenGeometry(desktopIndex));
+    auto setFullScreen = [](QWidget* widget) {
         widget->showMaximized();
     };
 
@@ -325,7 +328,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
                 XPFPluginHelperImpl* helper = dynamic_cast<XPFPluginHelperImpl*>(m_XPFHelper);
 
                 if (element.attribute("fullscreen") != "false") {
-                    setFullScreen(widget, desktopIndex);
+                    setFullScreen(widget);
                 }
                 else {
                     QSize   size(0, 0);
@@ -335,7 +338,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
                         QString wstr = reg.cap(1);
                         QString hstr = reg.cap(2);
                         if (wstr.isEmpty() || hstr.isEmpty()) {
-                            setFullScreen(widget, desktopIndex);
+                            setFullScreen(widget);
                         }
                         else {
                             size.setWidth(wstr.toInt());
@@ -354,7 +357,7 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
                         }
                     }
                     else {
-                        setFullScreen(widget, desktopIndex);
+                        setFullScreen(widget);
                     }
                 }
 

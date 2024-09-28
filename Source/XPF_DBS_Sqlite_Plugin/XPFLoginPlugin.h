@@ -1,18 +1,17 @@
-#ifndef XPFUIPLUGIN_H
-#define XPFUIPLUGIN_H
+#pragma once
 
 #include "IXPFPlugin.h"
 #include <QObject>
 
-class XPFUiPlugin
+class XPFLoginPlugin
     : public QObject
     , public IXPFPlugin {
     Q_OBJECT
     Q_INTERFACES(IXPFPlugin)
     Q_PLUGIN_METADATA(IID IXPFPlugin_IID)
 public:
-    XPFUiPlugin();
-    ~XPFUiPlugin();
+    XPFLoginPlugin();
+    ~XPFLoginPlugin();
 
     // IXPFPlugin interface
 public:
@@ -22,4 +21,3 @@ public:
     void     onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
     QWidget* getWidget(const QString& WID) override;
 };
-#endif // XPFUIPLUGIN_H

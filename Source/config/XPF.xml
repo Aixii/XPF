@@ -10,11 +10,11 @@
             <WidgetHeader height="30">header0</WidgetHeader>
             <WidgetBody>screen0</WidgetBody>
         </Screen>
-        <Screen size="640:480" fullscreen="false">
+        <!--<Screen size="640:480" fullscreen="false">
             <ID>1</ID>
             <Name>屏幕2</Name>
             <WidgetBody>screen1</WidgetBody>
-        </Screen>
+        </Screen>-->
     </AppScreens>
     <!-- 是否开启任务栏托盘 -->
     <TrayIcon enable="true" />

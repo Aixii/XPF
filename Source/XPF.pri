@@ -4,7 +4,7 @@ XPFDIR = $$absolute_path(..)
 XPFDIR_BIN = $$XPFDIR/Bin
 XPFDIR_SRC = $$XPFDIR/Source
 
-DESTDIR = $$XPFDIR/Bin
+DESTDIR = $$XPFDIR_BIN
 CONFIG(debug, debug|release){
     OBJECTS_DIR = $$XPFDIR/Debug/obj
     MOC_DIR     = $$XPFDIR/Debug/moc
@@ -19,6 +19,3 @@ CONFIG(debug, debug|release){
 
 INCLUDEPATH += $$XPFDIR_SRC/include
 
-# 拷贝命令
-win32:  QMAKE_COPY = copy
-unix:   QMAKE_COPY = cp

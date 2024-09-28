@@ -21,6 +21,7 @@ add_subdirectory(XPFLauncher)
 add_subdirectory(XPFCore)
 add_subdirectory(XPFUi)
 add_subdirectory(XPFTrayMenu)
+add_subdirectory(XPFLoginPlugin)
 
 set(CONF_SRC_DIR "${XPFSRCDIR}/config")
 set(CONF_DEST_DIR "${XPFBINDIR}/XPFConfig")

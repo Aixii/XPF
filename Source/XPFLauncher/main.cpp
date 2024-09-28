@@ -1,4 +1,4 @@
-#include <iostream>
+ï»¿#include <iostream>
 #include <string.h>
 
 #ifdef _WIN32
@@ -10,10 +10,10 @@ int main(int argc, char* argv[]) {
     (void)argc;
     (void)argv;
 
-    // »ñÈ¡µ±Ç°µÄ PATH
+    // è·å–å½“å‰çš„ PATH
     const char* oldPath = std::getenv("PATH");
 
-    // ÉèÖÃĞÂµÄ PATH
+    // è®¾ç½®æ–°çš„ PATH
     std::string newPathR = "..\\Libs";
 
     char absolutePath[MAX_PATH];
@@ -46,7 +46,7 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // Æô¶¯Ä¿±ê³ÌĞò
+    // å¯åŠ¨ç›®æ ‡ç¨‹åº
     STARTUPINFO         si;
     PROCESS_INFORMATION pi;
     ZeroMemory(&si, sizeof(si));
@@ -69,7 +69,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    // µÈ´ıÄ¿±ê³ÌĞòÍË³ö
+    // ç­‰å¾…ç›®æ ‡ç¨‹åºé€€å‡º
     WaitForSingleObject(pi.hProcess, INFINITE);
     CloseHandle(pi.hProcess);
     CloseHandle(pi.hThread);

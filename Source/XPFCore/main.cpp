@@ -1,6 +1,7 @@
-#include "XPFCore.h"
+﻿#include "XPFCore.h"
 #include "XPFGlobal.h"
 #include <QApplication>
+#include <QDebug>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QString>

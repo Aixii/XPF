@@ -4,20 +4,20 @@
 
 IXPFPluginHelper* g_pPluginHelper = Q_NULLPTR;
 
-XPFUiPluin::XPFUiPluin() {
+XPFUiPlugin::XPFUiPlugin() {
 }
 
-XPFUiPluin::~XPFUiPluin() {
+XPFUiPlugin::~XPFUiPlugin() {
 }
 
-void XPFUiPluin::initPlugin(IXPFPluginHelper* pluginHelper) {
+void XPFUiPlugin::initPlugin(IXPFPluginHelper* pluginHelper) {
     g_pPluginHelper = pluginHelper;
 }
 
-void XPFUiPluin::initAfterPlugin() {
+void XPFUiPlugin::initAfterPlugin() {
 }
 
-QWidget* XPFUiPluin::getWidget(const QString& WID) {
+QWidget* XPFUiPlugin::getWidget(const QString& WID) {
     QString path = QString("%0/XPFUi/%1.xml")
                        .arg(g_pPluginHelper->getXPFBinConfigDir())
                        .arg(WID);
@@ -25,10 +25,10 @@ QWidget* XPFUiPluin::getWidget(const QString& WID) {
     return widget;
 }
 
-void XPFUiPluin::release() {
+void XPFUiPlugin::release() {
 }
 
-void XPFUiPluin::onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+void XPFUiPlugin::onMessage(uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     Q_UNUSED(msgid)
     Q_UNUSED(param)
     Q_UNUSED(sender)
