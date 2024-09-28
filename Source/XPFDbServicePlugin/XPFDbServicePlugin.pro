@@ -1,5 +1,3 @@
-
-
 QT += core gui xml network sql
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,24 +10,29 @@ TEMPLATE = lib
 CONFIG += plugin
 
 CONFIG(debug, debug|release){
-    TARGET = XPFLoginPlugind
+    TARGET = XPFDbServicePlugind
 } else {
-    TARGET = XPFLoginPlugin
+    TARGET = XPFDbServicePlugin
 }
 
 DESTDIR = $$DESTDIR/XPFPlugins
 
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
+    IXPFDbService.h \
     SqlResult.h \
     SqlResultPrivate.h \
-    XPFDbService4SqlitePlugin.h \
+    XPFDbServiceFacrtory.h \
+    XPFDbServiceImplPrivate.h \
+    XPFDbServicePlugin.h \
     XPFDbServiceImpl.h
 
 SOURCES += \
     SqlResult.cpp \
     SqlResultPrivate.cpp \
-    XPFDbService4SqlitePlugin.cpp \ \
+    XPFDbServiceFacrtory.cpp \
+    XPFDbServiceImplPrivate.cpp \
+    XPFDbServicePlugin.cpp \ \
     XPFDbServiceImpl.cpp
 
 FORMS +=

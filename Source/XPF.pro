@@ -9,7 +9,7 @@ SUBDIRS += \
     XPFUi \
     XPFTrayMenuPlugin \
     XPFLoginPlugin \
-    XPFDbService4SqlitePlugin \
+    XPFDbServicePlugin \
 #    XPFCreatePluginTool \
 
 

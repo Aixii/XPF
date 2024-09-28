@@ -1,5 +1,6 @@
 ﻿#include "SqlResult.h"
 #include "SqlResultPrivate.h"
+#include <QSqlField>
 #include <QSqlRecord>
 
 SqlResult::SqlResult(QObject* parent)
