@@ -9,10 +9,10 @@ public:
     XPFDbServiceFacrtory();
     ~XPFDbServiceFacrtory();
 
-    std::shared_ptr<XPFDbServiceImpl*> createXPFDbService();
+    std::shared_ptr<IXPFDbService*> createXPFDbService();
 
 private:
-    QList<XPFDbServiceImpl*> m_DbServices;
+    QList<IXPFDbService*> m_DbServices;
 };
 
 #endif // XPFDBSERVICEFACRTORY_H

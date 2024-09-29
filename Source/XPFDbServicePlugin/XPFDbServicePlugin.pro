@@ -20,6 +20,7 @@ DESTDIR = $$DESTDIR/XPFPlugins
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
     IXPFDbService.h \
+    IXPFDbServiceFactory.h \
     SqlResult.h \
     SqlResultPrivate.h \
     XPFDbServiceFacrtory.h \

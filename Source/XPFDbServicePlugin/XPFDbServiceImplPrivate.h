@@ -15,7 +15,6 @@ public:
 
 private:
     QSqlDatabase m_db;
-    QSqlDriver*  m_driver;
 };
 
 #endif // XPFDBSERVICEIMPLPRIVATE_H

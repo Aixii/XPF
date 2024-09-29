@@ -12,4 +12,8 @@ bool XPFDbServiceImpl::addDataBase(const QString& type, const QString& connectNa
         return false;
     }
     d->m_db = QSqlDatabase::addDatabase(type, connectName);
+    if (d->m_db.isValid()) {
+        return true;
+    }
+    return false;
 }
