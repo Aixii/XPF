@@ -16,6 +16,8 @@ private:
     static int       count;
 };
 
+int IXPFService::count;
+
 int IXPFService::getSequienceNumber() {
     QDateTime time = QDateTime::currentDateTime();
     int       code = time.toMSecsSinceEpoch() & 0xFFFFFF;

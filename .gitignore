@@ -1,0 +1,6 @@
+Source/build/
+Bin/
+Libs/
+Source/.qmake.stash
+Debug/
+Source/XPF.pro.user

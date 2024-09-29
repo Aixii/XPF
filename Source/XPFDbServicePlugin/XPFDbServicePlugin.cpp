@@ -1,4 +1,4 @@
-﻿#include "XPFDbService4SqlitePlugin.h"
+﻿#include "XPFDbServicePlugin.h"
 #include "IXPFPluginHelper.h"
 
 IXPFPluginHelper* g_pPluginHelper = Q_NULLPTR;
@@ -14,6 +14,8 @@ void XPFDbService4SqlitePlugin::initPlugin(IXPFPluginHelper* pluginHelper) {
 }
 
 void XPFDbService4SqlitePlugin::initAfterPlugin() {
+
+    g_pPluginHelper->registerService()
 }
 
 void XPFDbService4SqlitePlugin::release() {
@@ -31,5 +33,5 @@ QWidget* XPFDbService4SqlitePlugin::getWidget(const QString& WID) {
 }
 
 QString XPFDbService4SqlitePlugin::getPluginName() {
-    return "XPFDbService4SqlitePlugin";
+    return "XPFDbServicePlugin";
 }
