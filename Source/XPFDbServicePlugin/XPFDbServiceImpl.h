@@ -9,7 +9,7 @@
 
 class XPFDbServiceImplPrivate;
 
-class XPFDbServiceImpl : public IXPF {
+class XPFDbServiceImpl : public IXPFDbService {
 
 public:
     XPFDbServiceImpl();
