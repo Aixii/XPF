@@ -15,25 +15,23 @@ public:
     XPFDbServiceImpl();
     ~XPFDbServiceImpl();
 
-    /***
-    Driver Type         Description
-    QDB2                IBM DB2
-    QIBASE              Borland InterBase Driver
-    QMYSQL              MySQL Driver
-    QOCI                Oracle Call Interface Driver
-    QODBC               ODBC Driver (includes Microsoft SQL Server)
-    QPSQL               PostgreSQL Driver
-    QSQLITES            QLite version 3 or above
-    QSQLITE2            SQLite version 2
-    QTDS                Sybase Adaptive Server
-    ***/
-    bool addDataBase(const QString& type, const QString& connectName);
+    bool setDatabase(const QString &driverName, const QString &connName);
 
-    bool isConnected();
-    bool isOpened();
+private:
+    SqlResult *createResultByQuery(QSqlQuery &query);
 
 private:
     XPFDbServiceImplPrivate* d;
+
+    // IXPFDbService interface
+public:
+    bool transaction() override;
+    bool rollback() override;
+    bool exec(const QString &sql, SqlResult **result) override;
+    bool insert(const QString &tb_name, const QVariantMap &valueMap, SqlResult **result) override;
+    bool update(const QString &tb_name, const QVariantMap &valueMap, const QString &conditional, SqlResult **result) override;
+    bool remove(const QString &tb_name, const QString &conditional, SqlResult **result) override;
+    bool select(const QString &tb_name, const QStringList &fileds, const QString &conditional, SqlResult **result) override;
 };
 
 #endif // XPFDB4SQLITESERVICE_H

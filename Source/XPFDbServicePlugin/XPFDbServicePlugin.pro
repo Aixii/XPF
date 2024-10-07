@@ -23,7 +23,7 @@ HEADERS += \
     IXPFDbServiceFactory.h \
     SqlResult.h \
     SqlResultPrivate.h \
-    XPFDbServiceFacrtory.h \
+    XPFDbServiceFacrtoryImpl.h \
     XPFDbServiceImplPrivate.h \
     XPFDbServicePlugin.h \
     XPFDbServiceImpl.h
@@ -31,7 +31,7 @@ HEADERS += \
 SOURCES += \
     SqlResult.cpp \
     SqlResultPrivate.cpp \
-    XPFDbServiceFacrtory.cpp \
+    XPFDbServiceFacrtoryImpl.cpp \
     XPFDbServiceImplPrivate.cpp \
     XPFDbServicePlugin.cpp \ \
     XPFDbServiceImpl.cpp
