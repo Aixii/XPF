@@ -1,7 +1,7 @@
 ﻿#ifndef IR_LOGINWGT_H
 #define IR_LOGINWGT_H
 
-//#include "IR_FingerLoginDialog.h"
+// #include "IR_FingerLoginDialog.h"
 #include <QFrame>
 #include <QWidget>
 
@@ -20,10 +20,11 @@ public:
 
     void showMask(bool);
 
+public slots:
+    void slotLoginResult(bool ok, const QString& message);
+
 signals:
-    void sigLoginSucessed();
     void sigLogin(const QString& username, const QString& password);
-    void sigRegister();
 
 private slots:
     void on_pushButton_Login_clicked();

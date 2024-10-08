@@ -55,6 +55,7 @@ void IRDataBaseManagerPlugin::onMessage(const QString& topic, uint32_t msgid, co
             m_UserDbManager->slotLogin(result->username, result->password);
         }
         break;
+
     default:
         break;
     }

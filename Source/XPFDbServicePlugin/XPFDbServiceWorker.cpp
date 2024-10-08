@@ -86,7 +86,7 @@ bool XPFDbServiceWorker::insert(const QString& tb_name, const QVariantMap& value
     return true;
 }
 
-bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional, SqlResult** result) {
+bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap, SqlResult** result) {
     QString sql = QString("UPDATE %0 SET %1 WHERE %2").arg(tb_name);
 
     QString str0;
@@ -101,7 +101,25 @@ bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& value
         }
     }
 
-    sql = sql.arg(str0).arg(conditional);
+    sql = sql.arg(str0);
+
+    QString condition;
+
+    if (!condMap.isEmpty()) {
+        QMapIterator<QString, QVariant> iter(condMap);
+        while (iter.hasNext()) {
+            iter.next();
+            condition += iter.key();
+            condition += "=";
+            condition += QString(":_%0").arg(iter.key());
+
+            if (iter.hasNext()) {
+                condition += " AND ";
+            }
+        }
+
+        sql += QString(" WHERE %0").arg(condition);
+    }
 
     QSqlQuery query(m_db);
 
@@ -115,6 +133,14 @@ bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& value
         while (iter.hasNext()) {
             iter.next();
             query.bindValue(":" + iter.key(), iter.value());
+        }
+
+        if (!condMap.isEmpty()) {
+            QMapIterator<QString, QVariant> iter(condMap);
+            while (iter.hasNext()) {
+                iter.next();
+                query.bindValue(QString(":_%0").arg(iter.key()), iter.value());
+            }
         }
 
         query.exec();
@@ -133,14 +159,60 @@ bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& value
     return true;
 }
 
-bool XPFDbServiceWorker::remove(const QString& tb_name, const QString& conditional, SqlResult** result) {
-    QString sql = QString("DELETE FROM %0 WHERE %1").arg(tb_name).arg(conditional);
+bool XPFDbServiceWorker::remove(const QString& tb_name, const QVariantMap& condMap, SqlResult** result) {
+    QString sql = QString("DELETE FROM %0").arg(tb_name);
 
-    return exec(sql, result);
+    QString condition;
+
+    if (!condMap.isEmpty()) {
+        QMapIterator<QString, QVariant> iter(condMap);
+        while (iter.hasNext()) {
+            iter.next();
+            condition += iter.key();
+            condition += "=";
+            condition += QString(":%0").arg(iter.key());
+
+            if (iter.hasNext()) {
+                condition += " AND ";
+            }
+        }
+
+        sql += QString(" WHERE %0").arg(condition);
+    }
+
+    QSqlQuery query(m_db);
+
+    do {
+        if (!query.prepare(sql)) {
+            break;
+        }
+
+        if (!condMap.isEmpty()) {
+            QMapIterator<QString, QVariant> iter(condMap);
+            while (iter.hasNext()) {
+                iter.next();
+                query.bindValue(QString(":%0").arg(iter.key()), iter.value());
+            }
+        }
+
+        query.exec();
+    }
+    while (0);
+
+    if (result != nullptr) {
+        *result = new SqlResult;
+        (*result)->readFromQSqlQuery(query);
+    }
+
+    if (query.lastError().type() != QSqlError::NoError) {
+        return false;
+    }
+
+    return true;
 }
 
-bool XPFDbServiceWorker::select(const QString& tb_name, const QStringList& fields, const QString& conditional, SqlResult** result) {
-    QString sql = QString("SELECT ( %0 ) FROM %1");
+bool XPFDbServiceWorker::select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap, SqlResult** result) {
+    QString sql = QString("SELECT %0 FROM %1");
 
     QString str0 = fields.at(0);
     for (int index = 1; index < fields.size(); index++) {
@@ -149,13 +221,42 @@ bool XPFDbServiceWorker::select(const QString& tb_name, const QStringList& field
 
     sql = sql.arg(str0).arg(tb_name);
 
-    if (!conditional.isEmpty()) {
-        sql = QString(" WHERE %0").arg(conditional);
+    QString condition;
+
+    if (!condMap.isEmpty()) {
+        QMapIterator<QString, QVariant> iter(condMap);
+        while (iter.hasNext()) {
+            iter.next();
+            condition += iter.key();
+            condition += "=";
+            condition += QString(":%0").arg(iter.key());
+
+            if (iter.hasNext()) {
+                condition += " AND ";
+            }
+        }
+
+        sql += QString(" WHERE %0").arg(condition);
     }
 
     QSqlQuery query(m_db);
 
-    query.exec();
+    do {
+        if (!query.prepare(sql)) {
+            break;
+        }
+
+        if (!condMap.isEmpty()) {
+            QMapIterator<QString, QVariant> iter(condMap);
+            while (iter.hasNext()) {
+                iter.next();
+                query.bindValue(QString(":%0").arg(iter.key()), iter.value());
+            }
+        }
+
+        query.exec();
+    }
+    while (0);
 
     if (result != nullptr) {
         *result = new SqlResult;
@@ -200,52 +301,52 @@ void XPFDbServiceWorker::slotInsert(int seq, const QString& tb_name, const QVari
     emit sigSqlExecuteResult(seq, ret);
 }
 
-void XPFDbServiceWorker::slotUpdate(int seq, const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) {
+void XPFDbServiceWorker::slotUpdate(int seq, const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap) {
     if (QThread::currentThread() != this->thread()) {
         QMetaObject::invokeMethod(this, "slotUpdate", Qt::QueuedConnection,
                                   Q_ARG(int, seq),
                                   Q_ARG(const QString&, tb_name),
                                   Q_ARG(const QVariantMap&, valueMap),
-                                  Q_ARG(const QString&, conditional));
+                                  Q_ARG(const QVariantMap&, condMap));
         return;
     }
 
     SqlResult* ret = nullptr;
 
-    update(tb_name, valueMap, conditional, &ret);
+    update(tb_name, valueMap, condMap, &ret);
 
     emit sigSqlExecuteResult(seq, ret);
 }
 
-void XPFDbServiceWorker::slotRemove(int seq, const QString& tb_name, const QString& conditional) {
+void XPFDbServiceWorker::slotRemove(int seq, const QString& tb_name, const QVariantMap& condMap) {
     if (QThread::currentThread() != this->thread()) {
         QMetaObject::invokeMethod(this, "slotRemove", Qt::QueuedConnection,
                                   Q_ARG(int, seq),
                                   Q_ARG(const QString&, tb_name),
-                                  Q_ARG(const QString&, conditional));
+                                  Q_ARG(const QVariantMap&, condMap));
         return;
     }
 
     SqlResult* ret = nullptr;
 
-    remove(tb_name, conditional, &ret);
+    remove(tb_name, condMap, &ret);
 
     emit sigSqlExecuteResult(seq, ret);
 }
 
-void XPFDbServiceWorker::slotSelect(int seq, const QString& tb_name, const QStringList& fields, const QString& conditional) {
+void XPFDbServiceWorker::slotSelect(int seq, const QString& tb_name, const QStringList& fields, const QVariantMap& condMap) {
     if (QThread::currentThread() != this->thread()) {
         QMetaObject::invokeMethod(this, "slotSelect", Qt::QueuedConnection,
                                   Q_ARG(int, seq),
                                   Q_ARG(const QString&, tb_name),
                                   Q_ARG(const QStringList&, fields),
-                                  Q_ARG(const QString&, conditional));
+                                  Q_ARG(const QVariantMap&, condMap));
         return;
     }
 
     SqlResult* ret = nullptr;
 
-    select(tb_name, fields, conditional, &ret);
+    select(tb_name, fields, condMap, &ret);
 
     emit sigSqlExecuteResult(seq, ret);
 }

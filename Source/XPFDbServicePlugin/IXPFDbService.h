@@ -13,11 +13,11 @@ public:
 
     virtual int insert(const QString& tb_name, const QVariantMap& valueMap) = 0;
 
-    virtual int update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) = 0;
+    virtual int update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap) = 0;
 
-    virtual int remove(const QString& tb_name, const QString& conditional) = 0;
+    virtual int remove(const QString& tb_name, const QVariantMap& condMap) = 0;
 
-    virtual int select(const QString& tb_name, const QStringList& fields, const QString& conditional = QString()) = 0;
+    virtual int select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap) = 0;
 
 signals:
     void sigSqlExecuteResult(int seq, SqlResult* result);

@@ -2,6 +2,8 @@
 
 TEMPLATE = subdirs
 
+CONFIG = ordered
+
 SUBDIRS += \
 #    XPFLauncher \
     XPFConfigs \

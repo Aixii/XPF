@@ -1,5 +1,8 @@
 TEMPLATE = subdirs
 
+CONFIG = ordered
+
 SUBDIRS += \
+    IRDataBaseManagerPlugin \
     IRAccountManagerPlugin \
-    IRDataBaseManagerPlugin
+    IRMenuHeaderPlugin \

@@ -1,14 +1,23 @@
 ﻿#ifndef IRTOPICDEF_H
 #define IRTOPICDEF_H
 
+#include <QByteArray>
+#include <Qt>
 #include <strings.h>
+#include <vector>
 
 static char TOPIC_IRAccount[] = "TOPIC_IRAccount";
 
 namespace IR {
 enum MSG_ID {
-    LOGIN_REQUEST_ID = 0x00001000,
-    LOGIN_RESULT_ID  = 0x00001001,
+    LOGIN_REQUEST_ID   = 0x00001000,
+    LOGIN_RESULT_ID    = 0x00001001,
+    LOGIN_SUCCEED_ID   = 0x00001002,
+    LOGIN_USER_INFO_ID = 0x00001003,
+    LOGOUT_MSG_ID      = 0x00001010,
+
+    //    USER_INFO_QUERY_ID = 0x00001100,
+    //    USER_INFO_MODIFY_ID = 0x00001101,
 };
 
 typedef struct LOGIN_RESULT
@@ -19,6 +28,10 @@ typedef struct LOGIN_RESULT
     LOGIN_RESULT() {
         result = false;
         memset(message, 0, sizeof(message));
+    }
+
+    ~LOGIN_RESULT() {
+        Q_UNUSED(TOPIC_IRAccount)
     }
 
 } st_Login_Result;
@@ -32,6 +45,93 @@ typedef struct LOGIN_REQUEST
         memset(this, 0, sizeof(*this));
     }
 } st_Login_Request;
+
+typedef struct USER_INFO
+{
+    int  id;
+    int  grade;
+    int  status;
+    char username[128];
+    char password[128];
+    char usercode[128];
+    char phone[16];
+    int  finger_index;
+
+    short image_size;
+
+    QByteArray finger_image;
+
+    USER_INFO() {
+        id           = 0;
+        grade        = 0;
+        status       = 0;
+        finger_index = 0;
+        image_size   = 0;
+        memset(username, 0, sizeof(username));
+        memset(password, 0, sizeof(password));
+        memset(usercode, 0, sizeof(usercode));
+        memset(phone, 0, sizeof(phone));
+    }
+
+    ~USER_INFO() { }
+
+    USER_INFO(const USER_INFO& other) {
+        *this = other;
+    }
+
+    USER_INFO& operator=(const USER_INFO& other) {
+        if (this != &other) {
+            this->id           = other.id;
+            this->grade        = other.grade;
+            this->status       = other.status;
+            this->finger_index = other.finger_index;
+            this->image_size   = other.image_size;
+
+            memcpy(this->username, other.username, sizeof(this->username));
+            memcpy(this->password, other.password, sizeof(this->password));
+            memcpy(this->usercode, other.usercode, sizeof(this->usercode));
+            memcpy(this->phone, other.phone, sizeof(this->phone));
+
+            this->finger_image = other.finger_image;
+        }
+
+        return *this;
+    }
+
+    int pack(char* buffer, int size) {
+        int offset = sizeof(id) + sizeof(grade) + sizeof(status) + sizeof(finger_index) + sizeof(username) + sizeof(password) + sizeof(usercode) + sizeof(phone) + sizeof(image_size);
+        if (size < (offset + image_size)) {
+            return 0;
+        }
+        memcpy(buffer, this, offset);
+
+        memcpy(buffer + offset, finger_image.data(), finger_image.size());
+
+        return offset + image_size;
+    }
+
+    int unpack(const char* buffer, int size) {
+
+        int offset = sizeof(id) + sizeof(grade) + sizeof(status) + sizeof(finger_index) + sizeof(username) + sizeof(password) + sizeof(usercode) + sizeof(phone) + sizeof(image_size);
+        if (size < offset) {
+            return 0;
+        }
+        memcpy(this, buffer, offset);
+
+        if (size < (this->image_size + offset)) {
+            return 0;
+        }
+
+        this->finger_image.append(buffer + offset, this->image_size);
+
+        return offset + this->image_size;
+    }
+
+    int size() {
+        int offset = sizeof(id) + sizeof(grade) + sizeof(status) + sizeof(finger_index) + sizeof(username) + sizeof(password) + sizeof(usercode) + sizeof(phone) + sizeof(image_size);
+        return offset + image_size;
+    }
+} st_UserInfo;
 
 }
 

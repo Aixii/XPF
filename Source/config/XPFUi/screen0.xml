@@ -10,6 +10,10 @@
         <!-- <Splitter id="" name="" stretch="2:10:20"/> -->
         <StackWidget id="stackedwidget_main">
             <PluginWidget id="loginwgt" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_LoginWgt"/>
+            <Widget id="mainwgt" stretches="0,1">
+                <PluginWidget id="menuheaderwgt" plugin_name="IRMenuHeaderPlugin" plugin_winid="IR_MenuHeaderWgt"/>
+                <Widget id="1" name="1" style=""/>
+            </Widget>
         </StackWidget>
     </Widgets>
     <!-- <Popups>

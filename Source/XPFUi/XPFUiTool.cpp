@@ -55,23 +55,43 @@ QWidget* XPFUiTool::generateWidget(const QString& fileName) {
 }
 
 QWidget* XPFUiTool::createWidget(const QDomElement& em) {
-    QWidget* widget      = new QWidget;
-    QString  orientation = em.attribute("layout_orientation", "vertical");
-    QLayout* layout      = nullptr;
+    QWidget* widget = new QWidget;
+
+    QString orientation = em.attribute("layout_orientation", "vertical");
+
+    QString stretches = em.attribute("stretches");
+
+    QStringList stre = stretches.split(",");
+
+    QLayout* layout = nullptr;
     if (orientation == "horizontal") {
         layout = new QHBoxLayout(widget);
     }
     else {
         layout = new QVBoxLayout(widget);
     }
+
+    layout->setContentsMargins(0, 0, 0, 0);
     widget->setLayout(layout);
 
     QDomNode node = em.firstChild();
+
+    int index = 0;
     while (!node.isNull()) {
         if (node.isElement()) {
             QDomElement cem = node.toElement();
             QWidget*    cw  = createUi(cem);
             layout->addWidget(cw);
+
+            if (orientation == "horizontal") {
+                QHBoxLayout* xl = qobject_cast<QHBoxLayout*>(layout);
+                xl->setStretch(index, QString(stre.value(index, "0")).trimmed().toInt());
+            }
+            else {
+                QVBoxLayout* xl = qobject_cast<QVBoxLayout*>(layout);
+                xl->setStretch(index, QString(stre.value(index, "0")).trimmed().toInt());
+            }
+            index++;
         }
         node = node.nextSibling();
     }

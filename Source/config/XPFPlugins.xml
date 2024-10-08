@@ -5,7 +5,8 @@
         <Plugin enable="1" plugin_name="XPFTrayMenu" plugin_dir="XPFPlugins" plugin_lib="XPFTrayMenuPlugind"/>
         <Plugin enable="1" plugin_name="XPFDbServicePlugin" plugin_dir="XPFPlugins" plugin_lib="XPFDbServicePlugind"/>
 
-        <Plugin enable="1" plugin_name="IRAccountManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRLoginPlugind"/>
         <Plugin enable="1" plugin_name="IRDataBaseManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDataBaseManagerPlugind"/>
+        <Plugin enable="1" plugin_name="IRAccountManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRAccountManagerPlugind"/>
+        <Plugin enable="1" plugin_name="IRMenuHeaderPlugin" plugin_dir="IRPlugins" plugin_lib="IRMenuHeaderPlugind"/>
     </Plugins>
 </App>

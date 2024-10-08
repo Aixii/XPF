@@ -17,19 +17,33 @@ CONFIG(debug, debug|release){
     TARGET = IRAccountManagerPlugin
 }
 
+CONFIG += file_copies
+
+IRAccoutInterfaces.files = \
+    $$XPFDIR_SRC/IR/IRAccountManagerPlugin/IAccountManagerService.h
+
+IRAccoutInterfaces.path = $$XPFDIR_SRC/include/Service/IR
+
+COPIES += IRAccoutInterfaces
+
+
 DESTDIR = $$DESTDIR/IRPlugins
 
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
-    DataHandler.h \
+    AccountManagerServiceImpl.h \
+    IAccountManagerService.h \
+    IRAccountDataHandler.h \
     IRAccountManagerPlugin.h \
     Widgets/IR_LoginWgt.h
 
 SOURCES += \
-    DataHandler.cpp \
+    AccountManagerServiceImpl.cpp \
+    IRAccountDataHandler.cpp \
     IRAccountManagerPlugin.cpp \
     Widgets/IR_LoginWgt.cpp
 
 FORMS += \
     Widgets/IR_LoginWgt.ui
+
 

@@ -14,9 +14,9 @@ public:
 public:
     int exec(const QString& sql);
     int insert(const QString& tb_name, const QVariantMap& valueMap);
-    int update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional);
-    int remove(const QString& tb_name, const QString& conditional);
-    int select(const QString& tb_name, const QStringList& fields, const QString& conditional);
+    int update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap);
+    int remove(const QString& tb_name, const QVariantMap& condMap);
+    int select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap);
 
 private:
     int generateSequenceCode();

@@ -1,7 +1,5 @@
 ﻿#include "IR_LoginWgt.h"
-//#include "FingerSerialManager.h"
-//#include "IRGLobalStatus.h"
-//#include "UserOperator.h"
+#include "IRTopicDef.h"
 #include "ui_IR_LoginWgt.h"
 #include <QAction>
 #include <QDebug>
@@ -12,8 +10,6 @@ IR_LoginWgt::IR_LoginWgt(QWidget* parent)
     : QWidget(parent)
     , ui(new Ui::IR_LoginWgt) {
     ui->setupUi(this);
-
-    setProperty("opcode", "LoginWgt");
 
     m_MaskFrame = new QFrame(this);
     m_MaskFrame->setStyleSheet("QFrame { background-color: rgba(0, 0, 0, 100); border: none; }");
@@ -141,6 +137,12 @@ void IR_LoginWgt::showMask(bool ok) {
     }
 }
 
+void IR_LoginWgt::slotLoginResult(bool ok, const QString& message) {
+    if (!ok) {
+        QMessageBox::critical(this, "错误", message, "确认");
+    }
+}
+
 void IR_LoginWgt::on_pushButton_Login_clicked() {
     QString username = ui->lineEdit_UserName->text();
     QString password = ui->lineEdit_PassWord->text();
@@ -165,7 +167,7 @@ bool IR_LoginWgt::eventFilter(QObject* watched, QEvent* event) {
 }
 
 void IR_LoginWgt::on_pushButton_Register_clicked() {
-    emit sigRegister();
+    //    emit sigRegister();
 }
 
 void IR_LoginWgt::on_pushButton_FingerLogin_clicked() {

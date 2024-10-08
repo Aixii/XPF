@@ -31,16 +31,16 @@ int XPFDbServiceImpl::insert(const QString& tb_name, const QVariantMap& valueMap
     return d->insert(tb_name, valueMap);
 }
 
-int XPFDbServiceImpl::update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) {
-    return d->update(tb_name, valueMap, conditional);
+int XPFDbServiceImpl::update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap) {
+    return d->update(tb_name, valueMap, condMap);
 }
 
-int XPFDbServiceImpl::remove(const QString& tb_name, const QString& conditional) {
-    return d->remove(tb_name, conditional);
+int XPFDbServiceImpl::remove(const QString& tb_name, const QVariantMap& condMap) {
+    return d->remove(tb_name, condMap);
 }
 
-int XPFDbServiceImpl::select(const QString& tb_name, const QStringList& fields, const QString& conditional) {
-    return d->select(tb_name, fields, conditional);
+int XPFDbServiceImpl::select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap) {
+    return d->select(tb_name, fields, condMap);
 }
 
 bool XPFDbServiceImpl::setDataBase(const QString& driverName, const QString& connName) {

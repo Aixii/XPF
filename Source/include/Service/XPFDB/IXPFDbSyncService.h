@@ -10,9 +10,9 @@ class IXPFDbSyncService {
 public:
     virtual bool exec(const QString& sql, SqlResult** result = nullptr)                                                                = 0;
     virtual bool insert(const QString& tb_name, const QVariantMap& valueMap, SqlResult** result = nullptr)                             = 0;
-    virtual bool update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional, SqlResult** result = nullptr) = 0;
-    virtual bool remove(const QString& tb_name, const QString& conditional, SqlResult** result = nullptr)                              = 0;
-    virtual bool select(const QString& tb_name, const QStringList& fields, const QString& conditional, SqlResult** result = nullptr)   = 0;
+    virtual bool update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap, SqlResult** result = nullptr) = 0;
+    virtual bool remove(const QString& tb_name, const QVariantMap& condMap, SqlResult** result = nullptr)                              = 0;
+    virtual bool select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap, SqlResult** result = nullptr)   = 0;
 };
 
 #endif

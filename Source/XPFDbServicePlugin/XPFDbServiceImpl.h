@@ -20,9 +20,9 @@ public:
 public:
     int exec(const QString& sql) override;
     int insert(const QString& tb_name, const QVariantMap& valueMap) override;
-    int update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) override;
-    int remove(const QString& tb_name, const QString& conditional) override;
-    int select(const QString& tb_name, const QStringList& fields, const QString& conditional) override;
+    int update(const QString& tb_name, const QVariantMap& valueMap, const QVariantMap& condMap) override;
+    int remove(const QString& tb_name, const QVariantMap& condMap) override;
+    int select(const QString& tb_name, const QStringList& fields, const QVariantMap& condMap) override;
 
     // IXPFDbServiceObj interface
 public:
