@@ -4,7 +4,8 @@
 
 IXPFPluginHelper* g_pPluginHelper = Q_NULLPTR;
 
-XPFDbService4SqlitePlugin::XPFDbService4SqlitePlugin() {
+XPFDbService4SqlitePlugin::XPFDbService4SqlitePlugin()
+    : m_Factory(nullptr) {
 }
 
 XPFDbService4SqlitePlugin::~XPFDbService4SqlitePlugin() {
@@ -23,13 +24,14 @@ void XPFDbService4SqlitePlugin::release() {
 }
 
 void XPFDbService4SqlitePlugin::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+    Q_UNUSED(topic)
     Q_UNUSED(msgid)
     Q_UNUSED(param)
     Q_UNUSED(sender)
 }
 
 QWidget* XPFDbService4SqlitePlugin::getWidget(const QString& WID) {
-
+    Q_UNUSED(WID)
     return Q_NULLPTR;
 }
 

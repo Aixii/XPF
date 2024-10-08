@@ -1,6 +1,8 @@
-#include "XPFDbServiceWorker.h"
+﻿#include "XPFDbServiceWorker.h"
 #include "SqlResult.h"
 #include <QEventLoop>
+#include <QSqlError>
+#include <QSqlQuery>
 #include <QThread>
 #include <QVariantMap>
 

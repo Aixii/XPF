@@ -1,44 +1,39 @@
 ﻿#ifndef XPFDBSERVICEIMPL_H
 #define XPFDBSERVICEIMPL_H
 
-#include "IXPFDbService.h"
+#include "IXPFDbService"
+#include "XPFDbServiceImplPrivate.h"
+#include "XPFDbServiceObject.h"
 #include <QSqlDatabase>
-#include <QSqlDriver>
-#include <QString>
-#include <QtSql/QSqlRecord>
+#include <QSqlQuery>
 
-class XPFDbServiceImplPrivate;
+class XPFDbServiceWorker;
 
-class XPFDbServiceImpl : public IXPFDbService {
+class XPFDbServiceImpl : public IXPFDbService
+    , public IXPFDbServiceObj {
     Q_OBJECT
 public:
     XPFDbServiceImpl();
     ~XPFDbServiceImpl();
 
-    bool setDatabase(const QString& driverName, const QString& connName);
+    // IXPFDbService interface
+public:
+    int exec(const QString& sql) override;
+    int insert(const QString& tb_name, const QVariantMap& valueMap) override;
+    int update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) override;
+    int remove(const QString& tb_name, const QString& conditional) override;
+    int select(const QString& tb_name, const QStringList& fields, const QString& conditional) override;
 
-private:
-    SqlResult* createResultByQuery(QSqlQuery& query);
+    // IXPFDbServiceObj interface
+public:
+    bool setDataBase(const QString& driverName, const QString& connName) override;
+    void setDataBaseName(const QString& db_name) override;
+    void setHost(const QString& hostname, uint16_t port) override;
+    bool open();
 
 private:
     XPFDbServiceImplPrivate* d;
-
-    // IXPFDbService interface
-public:
-    int  exec(const QString& sql) override;
-    bool execSync(const QString& sql, SqlResult** result) override;
-
-    int  insert(const QString& tb_name, const QVariantMap& valueMap) override;
-    bool insertSync(const QString& tb_name, const QVariantMap& valueMap, SqlResult** result) override;
-
-    int  update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional) override;
-    bool updateSync(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional, SqlResult** result) override;
-
-    int  remove(const QString& tb_name, const QString& conditional) override;
-    bool removeSync(const QString& tb_name, const QString& conditional, SqlResult** result) override;
-
-    int  select(const QString& tb_name, const QStringList& fields, const QString& conditional) override;
-    bool selectSync(const QString& tb_name, const QStringList& fields, const QString& conditional, SqlResult** result) override;
+    QThread*                 m_thread;
 };
 
-#endif // XPFDB4SQLITESERVICE_H
+#endif // XPFDbServiceImpl_H

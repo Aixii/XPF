@@ -22,6 +22,7 @@ INCLUDEPATH += $$XPFDIR_SRC/include/Define
 INCLUDEPATH += $$XPFDIR_SRC/include/Service
 
 HEADERS += \
+    $$PWD/include/Define/IRTopicDef.h \
     $$PWD/include/IXPFPlugin.h \
     $$PWD/include/IXPFPluginHelper.h \
     $$PWD/include/IXPFService.h \

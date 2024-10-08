@@ -14,7 +14,12 @@ private:
 
     // IXPFDbServiceFactory interface
 public:
-    std::shared_ptr<IXPFDbService> createXPFDbService(XPFDB::XPFDbDriverType type, const QString& connectName, const XPFDbAttribute& attr) override;
+    std::shared_ptr<IXPFDbService> createXPFDbService(XPFDB::XPFDbDriverType type, const QString& connectName, const QVariantMap& attr) override;
+
+    std::shared_ptr<IXPFDbSyncService> createXPFDbSyncService(XPFDB::XPFDbDriverType type, const QString& connectName, const QVariantMap& attr) override;
+
+private:
+    QString getDriverName(XPFDB::XPFDbDriverType type);
 };
 
 #endif // XPFDBSERVICEFACRTORY_H

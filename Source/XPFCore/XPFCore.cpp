@@ -185,7 +185,8 @@ bool XPFCore::initialize() {
     loadPlugins();
 
     // 加载完成之后，遍历插件执行生命周期函数
-    for (IXPFPlugin* plugin : m_Plugins.values()) {
+    for (IXPFPlugin* plugin : m_PluginsSort) {
+        qDebug() << plugin->getPluginName() + ": initAfter invoke.";
         plugin->initAfterPlugin();
     }
 
@@ -436,12 +437,14 @@ void XPFCore::loadPlugins() {
     while (!plugin_em.isNull()) {
         QString plugin_name = plugin_em.attribute("plugin_name");
         QString plugin_lib  = plugin_em.attribute("plugin_lib");
-        int     enable      = plugin_em.attribute("enable").toInt();
+        QString plugin_dir  = plugin_em.attribute("plugin_dir");
+
+        int enable = plugin_em.attribute("enable").toInt();
 
 #if defined(_WIN32)
-        QPluginLoader* loader = new QPluginLoader(QString("./XPFPlugins/%0.dll").arg(plugin_lib));
+        QPluginLoader* loader = new QPluginLoader(QString("./%0/%1.dll").arg(plugin_dir).arg(plugin_lib));
 #elif defined(UNIX)
-        QPluginLoader* loader = new QPluginLoader(QString("./XPFPlugins/%0.so").arg(plugin_lib));
+        QPluginLoader* loader = new QPluginLoader(QString("./%0/%1.so").arg(plugin_dir).arg(plugin_lib));
 #endif
         QObject* obj = loader->instance();
         if (obj) {
@@ -453,6 +456,7 @@ void XPFCore::loadPlugins() {
                 else {
                     m_Plugins[plugin_name]       = plugin;
                     m_PluginLoaders[plugin_name] = loader;
+                    m_PluginsSort.append(plugin);
                     plugin->initPlugin(m_XPFHelper);
                 }
             }
@@ -461,6 +465,11 @@ void XPFCore::loadPlugins() {
                                       u8"错误",
                                       QString(u8"无法加载%1").arg(plugin_lib));
             }
+        }
+        else {
+            QMessageBox::critical(nullptr,
+                                  u8"错误",
+                                  QString(u8"无法加载%1").arg(plugin_lib));
         }
         plugin_em = plugin_em.nextSiblingElement("Plugin");
     }

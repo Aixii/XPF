@@ -1,4 +1,4 @@
-#include "XPFUiTool.h"
+﻿#include "XPFUiTool.h"
 #include "IXPFPluginHelper.h"
 #include <QObject>
 
@@ -135,6 +135,21 @@ QWidget* XPFUiTool::createPluginWidget(const QDomElement& em) {
     return g_pPluginHelper->getXPFWidgetByPlugin(pluginName, pluginWinID);
 }
 
+QStackedWidget* XPFUiTool::createStackWidget(const QDomElement& em) {
+    QStackedWidget* widget = new QStackedWidget;
+
+    QDomElement cem = em.firstChildElement();
+    while (!cem.isNull()) {
+        QWidget* cw = createUi(cem);
+        cw->setParent(widget);
+
+        widget->addWidget(cw);
+        cem = cem.nextSiblingElement();
+    }
+
+    return widget;
+}
+
 QWidget* XPFUiTool::createUi(const QDomElement& em) {
     QWidget* widget  = nullptr;
     QString  tagName = em.tagName();
@@ -150,10 +165,17 @@ QWidget* XPFUiTool::createUi(const QDomElement& em) {
     else if (tagName == "PluginWidget") {
         widget = createPluginWidget(em);
     }
+    else if (tagName == "StackWidget") {
+        widget = createStackWidget(em);
+    }
     else {
         return nullptr;
     }
-    QString id = em.attribute("id");
-    widget->setObjectName(id);
+
+    if (widget != nullptr) {
+        QString id = em.attribute("id");
+        widget->setObjectName(id);
+    }
+
     return widget;
 }

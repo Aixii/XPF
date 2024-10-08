@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <App>
     <Plugins>
-        <Plugin enable="1" plugin_name="XPFUi" plugin_lib="XPFUiPlugind"/>
-        <Plugin enable="1" plugin_name="XPFTrayMenu" plugin_lib="XPFTrayMenuPlugind"/>
+        <Plugin enable="1" plugin_name="XPFUi" plugin_dir="XPFPlugins" plugin_lib="XPFUiPlugind"/>
+        <Plugin enable="1" plugin_name="XPFTrayMenu" plugin_dir="XPFPlugins" plugin_lib="XPFTrayMenuPlugind"/>
+        <Plugin enable="1" plugin_name="XPFDbServicePlugin" plugin_dir="XPFPlugins" plugin_lib="XPFDbServicePlugind"/>
+
+        <Plugin enable="1" plugin_name="IRAccountManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRLoginPlugind"/>
+        <Plugin enable="1" plugin_name="IRDataBaseManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDataBaseManagerPlugind"/>
     </Plugins>
 </App>

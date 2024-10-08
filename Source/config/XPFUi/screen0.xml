@@ -1,13 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <Window>
     <Widgets layout_orientation="vertical">
         <!-- <Widget id="" name="" style=""/> -->
-        <!-- <PluginWidget id="" plugin_name="" plugin_winid=""/> -->
-        <TabWidget id="tabwidget" titles="aasdddddddddddddddddd:aaaaaaaaaaaaaaaaaab">
+<!--         <PluginWidget id="" plugin_name="" plugin_winid=""/> -->
+        <!--<TabWidget id="tabwidget" titles="aasdddddddddddddddddd:aaaaaaaaaaaaaaaaaab">
             <Widget></Widget>
             <Widget></Widget>
-        </TabWidget>
+        </TabWidget>-->
         <!-- <Splitter id="" name="" stretch="2:10:20"/> -->
+        <StackWidget id="stackedwidget_main">
+            <PluginWidget id="loginwgt" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_LoginWgt"/>
+        </StackWidget>
     </Widgets>
     <!-- <Popups>
         <Popup id="">

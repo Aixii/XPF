@@ -1,6 +1,9 @@
 ﻿#include "SqlResult.h"
 #include "SqlResultPrivate.h"
+#include <QSqlDatabase>
+#include <QSqlError>
 #include <QSqlField>
+#include <QSqlQuery>
 #include <QSqlRecord>
 
 SqlResult::SqlResult(QObject* parent)
@@ -42,6 +45,12 @@ void SqlResult::readFromQSqlQuery(QSqlQuery query) {
         }
 
         d->m_datas.append(list);
+    }
+}
+
+void SqlResult::readFromQSqlDataBase(QSqlDatabase db) {
+    if (db.lastError().type() != QSqlError::NoError) {
+        d->setError(db.lastError());
     }
 }
 

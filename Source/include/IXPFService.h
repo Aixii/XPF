@@ -2,6 +2,8 @@
 
 class IXPFService {
 public:
-    IXPFService() { }
-    ~IXPFService() { }
+    IXPFService() {
+    }
+    virtual ~IXPFService() {
+    }
 };

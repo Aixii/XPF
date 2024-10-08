@@ -8,13 +8,15 @@ SUBDIRS += \
     XPFCore \
     XPFUi \
     XPFTrayMenuPlugin \
-    XPFLoginPlugin \
     XPFDbServicePlugin \
+    IR \
+
 #    XPFCreatePluginTool \
 
 
 
 #QMAKE_POST_LINK += copy config/* ../Bin/XPFConfig
+
 
 
 

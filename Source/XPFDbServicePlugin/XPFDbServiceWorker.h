@@ -1,15 +1,19 @@
-#ifndef XPFDBSERVICEWORKER_H
+﻿#ifndef XPFDBSERVICEWORKER_H
 #define XPFDBSERVICEWORKER_H
 
 #include "SqlResult.h"
 #include <QObject>
 #include <QSqlDatabase>
 
+class XPFDbServiceObject;
+
 class XPFDbServiceWorker : public QObject {
     Q_OBJECT
 public:
     explicit XPFDbServiceWorker(QObject* parent = nullptr);
     ~XPFDbServiceWorker();
+
+    friend class XPFDbServiceObject;
 
     // IXPFDbService interface
 public:

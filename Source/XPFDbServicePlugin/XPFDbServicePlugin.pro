@@ -17,26 +17,44 @@ CONFIG(debug, debug|release){
 
 DESTDIR = $$DESTDIR/XPFPlugins
 
+CONFIG += file_copies
+
+XPFDbInterfaces.files = \
+    $$XPFDIR_SRC/XPFDbServicePlugin/IXPFDbService.h \
+    $$XPFDIR_SRC/XPFDbServicePlugin/IXPFDbSyncService.h \
+    $$XPFDIR_SRC/XPFDbServicePlugin/IXPFDbServiceFactory.h \
+    $$XPFDIR_SRC/XPFDBServicePlugin/SqlResult.h
+
+XPFDbInterfaces.path = $$XPFDIR_SRC/include/Service/XPFDB
+
+COPIES += XPFDbInterfaces
+
 HEADERS += \
     $$XPFDIR_SRC/include/IXPFPlugin.h \
     IXPFDbService.h \
     IXPFDbServiceFactory.h \
+    IXPFDbServiceObj.h \
+    IXPFDbSyncService.h \
     SqlResult.h \
     SqlResultPrivate.h \
     XPFDbServiceFacrtoryImpl.h \
-    XPFDbServiceImplPrivate.h \
-    XPFDbServicePlugin.h \
     XPFDbServiceImpl.h \
-    XPFDbServiceWorker.h
+    XPFDbServiceImplPrivate.h \
+    XPFDbServiceObject.h \
+    XPFDbServicePlugin.h \
+    XPFDbServiceWorker.h \
+    XPFDbSyncServiceImpl.h
 
 SOURCES += \
     SqlResult.cpp \
     SqlResultPrivate.cpp \
     XPFDbServiceFacrtoryImpl.cpp \
-    XPFDbServiceImplPrivate.cpp \
-    XPFDbServicePlugin.cpp \
     XPFDbServiceImpl.cpp \
-    XPFDbServiceWorker.cpp
+    XPFDbServiceImplPrivate.cpp \
+    XPFDbServiceObject.cpp \
+    XPFDbServicePlugin.cpp \
+    XPFDbServiceWorker.cpp \
+    XPFDbSyncServiceImpl.cpp
 
 FORMS +=
 

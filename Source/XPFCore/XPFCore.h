@@ -1,4 +1,4 @@
-#ifndef XPFCORE_H
+﻿#ifndef XPFCORE_H
 #define XPFCORE_H
 
 #include "IXPFPlugin.h"
@@ -63,8 +63,11 @@ private:
     QVariantMap m_Config;
     // 所有的插件
     QMap<QString, IXPFPlugin*> m_Plugins;
+    QList<IXPFPlugin*>         m_PluginsSort;
+
     // 插件加载器
-    QMap<QString, QPluginLoader*> m_PluginLoaders;
+    QMap<QString, QPluginLoader*>
+        m_PluginLoaders;
     // XPF Helper
     IXPFPluginHelper* m_XPFHelper;
 
