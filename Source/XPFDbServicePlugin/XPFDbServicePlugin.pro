@@ -26,15 +26,17 @@ HEADERS += \
     XPFDbServiceFacrtoryImpl.h \
     XPFDbServiceImplPrivate.h \
     XPFDbServicePlugin.h \
-    XPFDbServiceImpl.h
+    XPFDbServiceImpl.h \
+    XPFDbServiceWorker.h
 
 SOURCES += \
     SqlResult.cpp \
     SqlResultPrivate.cpp \
     XPFDbServiceFacrtoryImpl.cpp \
     XPFDbServiceImplPrivate.cpp \
-    XPFDbServicePlugin.cpp \ \
-    XPFDbServiceImpl.cpp
+    XPFDbServicePlugin.cpp \
+    XPFDbServiceImpl.cpp \
+    XPFDbServiceWorker.cpp
 
 FORMS +=
 

@@ -32,7 +32,7 @@ void SqlResult::readFromQSqlQuery(QSqlQuery query) {
 
     int fieldcount = record.count();
     for (int index = 0; index < fieldcount; index++) {
-        d->m_fields.append(record.field(index));
+        d->m_fields.append(record.field(index).name());
     }
 
     while (query.next()) {
@@ -70,7 +70,7 @@ QVariantList SqlResult::row(int rowIndex) {
 }
 
 QVariant SqlResult::rowData(int rowIndex, int colunmIndex) {
-    if (rowIndex > d->m_datas.size() || colunmIndex > d->m_datas.at(rowIndex).at(colunmIndex)) {
+    if (rowIndex > d->m_datas.size() || colunmIndex > d->m_datas.at(rowIndex).size()) {
         return QVariant();
     }
     return d->m_datas.at(rowIndex).at(colunmIndex);

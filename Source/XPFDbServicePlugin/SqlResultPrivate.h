@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QSqlError>
+#include <QVariantList>
 
 class SqlResult;
 

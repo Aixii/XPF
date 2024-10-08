@@ -9,13 +9,12 @@ public:
     XPFDbServiceFacrtoryImpl();
     ~XPFDbServiceFacrtoryImpl();
 
-
 private:
     QList<IXPFDbService*> m_DbServices;
 
     // IXPFDbServiceFactory interface
 public:
-    std::shared_ptr<IXPFDbService *> createXPFDbService(XPFDB::XPFDbDriverType type, const QString &connectName, const XPFDbAttribute &attr) override;
+    std::shared_ptr<IXPFDbService> createXPFDbService(XPFDB::XPFDbDriverType type, const QString& connectName, const XPFDbAttribute& attr) override;
 };
 
 #endif // XPFDBSERVICEFACRTORY_H

@@ -6,9 +6,12 @@
 #include <QSqlDriver>
 #include <QString>
 
-class IXPFDbService : public IXPFService {
+class IXPFDbService : public QObject
+    , public IXPFService {
+    Q_OBJECT
 public:
-    IXPFDbService() { }
+    IXPFDbService()
+        : QObject() { }
     ~IXPFDbService() { }
 
     /***
@@ -25,20 +28,16 @@ public:
     ***/
     //    virtual bool addDataBase(const QString& type, const QString& connectName) = 0;
 
-    virtual bool transaction() = 0;
-    virtual bool rollback()    = 0;
-    //    virtual void setConnectOptions(const QString& options = QString()) = 0;
-    //    virtual void setHostName(const QString& host)                      = 0;
-    //    virtual void setPort(int port)                                     = 0;
-    //    virtual void setUserName(const QString& name)                      = 0;
-    //    virtual void setPassword(const QString& password)                  = 0;
+    //    virtual bool transaction() = 0;
+    //    virtual bool rollback()    = 0;
     /**
      * @brief exec 执行 sql
      * @param sql 被执行的 sql
      * @param result 执行的结果指针
      * @return sql 是否提交的结果
      */
-    virtual bool exec(const QString& sql, SqlResult** result = nullptr) = 0;
+    virtual int  exec(const QString& sql)                                   = 0;
+    virtual bool execSync(const QString& sql, SqlResult** result = nullptr) = 0;
 
     /**
      * @brief insert 插入一行数据
@@ -47,7 +46,8 @@ public:
      * @param result 插入执行的结果
      * @return sql 是否提交的结果
      */
-    virtual bool insert(const QString& tb_name, const QVariantMap& valueMap, SqlResult** result = nullptr) = 0;
+    virtual int  insert(const QString& tb_name, const QVariantMap& valueMap)                                   = 0;
+    virtual bool insertSync(const QString& tb_name, const QVariantMap& valueMap, SqlResult** result = nullptr) = 0;
 
     /**
      * @brief update 更新数据
@@ -57,7 +57,8 @@ public:
      * @param result 更新执行的结果
      * @return  sql 是否提交的结果
      */
-    virtual bool update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional, SqlResult** result = nullptr) = 0;
+    virtual int  update(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional)                                   = 0;
+    virtual bool updateSync(const QString& tb_name, const QVariantMap& valueMap, const QString& conditional, SqlResult** result = nullptr) = 0;
 
     /**
      * @brief remove 删除数据
@@ -66,7 +67,8 @@ public:
      * @param result 更新执行的结果
      * @return  sql 是否提交的结果
      */
-    virtual bool remove(const QString& tb_name, const QString& conditional, SqlResult** result = nullptr) = 0;
+    virtual int  remove(const QString& tb_name, const QString& conditional)                                   = 0;
+    virtual bool removeSync(const QString& tb_name, const QString& conditional, SqlResult** result = nullptr) = 0;
 
     /**
      * @brief select 查询数据
@@ -76,7 +78,11 @@ public:
      * @param result 查询执行的结果
      * @return  sql 是否提交的结果
      */
-    virtual bool select(const QString& tb_name, const QStringList& fileds, const QString& conditional = QString(), SqlResult** result = nullptr) = 0;
+    virtual int  select(const QString& tb_name, const QStringList& fields, const QString& conditional = QString())                       = 0;
+    virtual bool selectSync(const QString& tb_name, const QStringList& fields, const QString& conditional, SqlResult** result = nullptr) = 0;
+
+signals:
+    void sigSqlExecuteResult(int seq, SqlResult* result);
 };
 
 #endif // IXPFDBSERVICE_H

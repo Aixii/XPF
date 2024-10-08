@@ -2,5 +2,11 @@
 
 SqlResultPrivate::SqlResultPrivate(QObject* parent)
     : QObject(parent) {
-    m_error = QSqlError::NoError;
+}
+
+SqlResultPrivate::~SqlResultPrivate() {
+}
+
+void SqlResultPrivate::setError(const QSqlError& error) {
+    m_error = error;
 }

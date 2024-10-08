@@ -1,5 +1,6 @@
 ﻿#include "XPFDbServicePlugin.h"
 #include "IXPFPluginHelper.h"
+#include "XPFDbServiceFacrtoryImpl.h"
 
 IXPFPluginHelper* g_pPluginHelper = Q_NULLPTR;
 
@@ -14,8 +15,8 @@ void XPFDbService4SqlitePlugin::initPlugin(IXPFPluginHelper* pluginHelper) {
 }
 
 void XPFDbService4SqlitePlugin::initAfterPlugin() {
-
-    g_pPluginHelper->registerService()
+    m_Factory = new XPFDbServiceFacrtoryImpl();
+    g_pPluginHelper->registerService(IXPFDbServiceFactoryIID, m_Factory);
 }
 
 void XPFDbService4SqlitePlugin::release() {

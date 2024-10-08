@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "IXPFDbServiceFactory.h"
 #include "IXPFPlugin.h"
 #include <QObject>
 
@@ -22,4 +23,7 @@ public:
 
     QWidget* getWidget(const QString& WID) override;
     QString  getPluginName() override;
+
+private:
+    IXPFDbServiceFactory* m_Factory;
 };

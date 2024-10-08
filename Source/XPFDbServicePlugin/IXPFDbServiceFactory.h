@@ -4,6 +4,8 @@
 #include "IXPFDbService"
 #include <memory>
 
+static char* IXPFDbServiceFactoryIID = "IXPFDbServiceFactoryIID";
+
 namespace XPFDB {
 enum XPFDbDriverType {
     QDB2,
@@ -12,7 +14,7 @@ enum XPFDbDriverType {
     QOCI,
     QODBC,
     QPSQL,
-    QSQLITES,
+    QSQLITE3,
     QSQLITE2,
     QTDS,
 };
@@ -38,12 +40,12 @@ typedef struct XPFDbAttribute
     }
 } XPFDbAttribute;
 
-class IXPFDbServiceFactory {
+class IXPFDbServiceFactory : public IXPFService {
 public:
     IXPFDbServiceFactory() { }
     ~IXPFDbServiceFactory() { }
 
-    virtual std::shared_ptr<IXPFDbService*> createXPFDbService(XPFDB::XPFDbDriverType type, const QString& connectName, const XPFDbAttribute& attr = XPFDbAttribute()) = 0;
+    virtual std::shared_ptr<IXPFDbService> createXPFDbService(XPFDB::XPFDbDriverType type, const QString& connectName, const XPFDbAttribute& attr = XPFDbAttribute()) = 0;
 };
 
 #endif // IXPFDBSERVICEFACTORY_H
