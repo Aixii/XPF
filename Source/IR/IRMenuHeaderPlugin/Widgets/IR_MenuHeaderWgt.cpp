@@ -5,6 +5,7 @@
 // #include "UserOperator.h"
 #include "IXPFPluginHelper.h"
 #include "Service/IR/IAccountManagerService.h"
+#include "XPFTopicDef.h"
 #include "ui_IR_MenuHeaderWgt.h"
 #include <QMenu>
 #include <QMessageBox>
@@ -19,7 +20,8 @@ IR_MenuHeaderWgt::IR_MenuHeaderWgt(QWidget* parent)
     , m_menu(nullptr)
     , m_action_main(nullptr)
     , m_action_brower(nullptr)
-    , m_action_dm(nullptr) {
+    , m_action_deviceinfo(nullptr)
+    , m_action_usermanager(nullptr) {
     ui->setupUi(this);
 }
 
@@ -35,16 +37,23 @@ void IR_MenuHeaderWgt::init() {
     }
     // 添加选项到菜单
     if (m_action_main == nullptr) {
-        m_action_main = new QAction(QIcon(":/resource/image/more.png"), "主页", m_menu);
+        m_action_main = new QAction(QIcon(":/image/Resource/main.png"), "主页", m_menu);
         m_menu->addAction(m_action_main);
     }
+
     if (m_action_brower == nullptr) {
-        m_action_brower = new QAction(QIcon(":/resource/image/more.png"), "浏览数据", m_menu);
+        m_action_brower = new QAction(QIcon(":/image/Resource/data.png"), "数据浏览与分析", m_menu);
         m_menu->addAction(m_action_brower);
     }
-    if (m_action_dm == nullptr) {
-        m_action_dm = new QAction(QIcon(":/resource/image/more.png"), "数据管理", m_menu);
-        m_menu->addAction(m_action_dm);
+
+    if (m_action_deviceinfo == nullptr) {
+        m_action_deviceinfo = new QAction(QIcon(":/image/Resource/accessory.png"), "绝缘杆档案", m_menu);
+        m_menu->addAction(m_action_deviceinfo);
+    }
+
+    if (m_action_usermanager == nullptr) {
+        m_action_usermanager = new QAction(QIcon(":/image/Resource/order.png"), "用户管理", m_menu);
+        m_menu->addAction(m_action_usermanager);
     }
 
     // 设置按钮为带下拉箭头的按钮
@@ -63,7 +72,7 @@ void IR_MenuHeaderWgt::init() {
         Qt::UniqueConnection);
 
     QObject::connect(
-        m_action_dm, &QAction::triggered, this, [this]() {
+        m_action_usermanager, &QAction::triggered, this, [this]() {
 
         },
         Qt::UniqueConnection);
@@ -100,16 +109,17 @@ void IR_MenuHeaderWgt::slotLoginSuccessed() {
     case 1:
         m_menu->addAction(m_action_main);
         m_menu->addAction(m_action_brower);
-        m_menu->addAction(m_action_dm);
+        m_menu->addAction(m_action_deviceinfo);
+        m_menu->addAction(m_action_usermanager);
         break;
     case 2:
         m_menu->addAction(m_action_main);
         m_menu->addAction(m_action_brower);
-        m_menu->removeAction(m_action_dm);
+        m_menu->removeAction(m_action_usermanager);
         break;
     case 3:
         m_menu->addAction(m_action_brower);
-        m_menu->removeAction(m_action_dm);
+        m_menu->removeAction(m_action_usermanager);
         m_menu->removeAction(m_action_main);
         break;
     default:
@@ -131,7 +141,10 @@ void IR_MenuHeaderWgt::on_toolButton_Menu_clicked() {
 }
 
 void IR_MenuHeaderWgt::on_toolButton_Setting_clicked() {
-    //    m_SettingDialog->show();
+    QVariantMap map;
+    map["screenID"] = 0;
+    map["widgetID"] = "settingdialog";
+    g_pPluginHelper->sendMessage(TOPIC_Ui, XPFUi::SHOW_POPUP_ID, map);
 }
 
 void IR_MenuHeaderWgt::on_toolButton_UserIcon_clicked() {

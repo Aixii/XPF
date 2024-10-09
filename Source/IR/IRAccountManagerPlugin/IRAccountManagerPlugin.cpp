@@ -21,6 +21,7 @@ void IRAccountManagerPlugin::initPlugin(IXPFPluginHelper* pluginHelper) {
 
     if (m_LoginWgt == nullptr) {
         m_LoginWgt = new IR_LoginWgt;
+        m_LoginWgt->init();
     }
 }
 

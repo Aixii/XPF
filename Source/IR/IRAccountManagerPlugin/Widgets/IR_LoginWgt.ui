@@ -37,7 +37,7 @@
      <property name="styleSheet">
       <string notr="true">QFrame#frame
 {
-border-image: url(:/resource/image/colorhub.png);
+border-image: url(:/image/Resource/colorhub.png);
 background-repeat: no-repeat;
 background-position: center;
 }</string>

@@ -46,4 +46,7 @@ SOURCES += \
 FORMS += \
     Widgets/IR_LoginWgt.ui
 
+RESOURCES += \
+    IRAccountManagerPluginResource.qrc
+
 

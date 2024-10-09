@@ -33,3 +33,6 @@ SOURCES += \
 FORMS += \
     Widgets/IR_MenuHeaderWgt.ui
 
+RESOURCES += \
+    IRMenuHeaderPluginResource.qrc
+

@@ -12,13 +12,13 @@
             <PluginWidget id="loginwgt" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_LoginWgt"/>
             <Widget id="mainwgt" stretches="0,1">
                 <PluginWidget id="menuheaderwgt" plugin_name="IRMenuHeaderPlugin" plugin_winid="IR_MenuHeaderWgt"/>
-                <Widget id="1" name="1" style=""/>
+                <StackWidget id="stackedwidget_center">
+                    <PluginWidget id="testmainpage" plugin_name="IRTestMainPagePlugin" plugin_winid="IR_TestMainWgt"/>
+                </StackWidget>
             </Widget>
         </StackWidget>
     </Widgets>
-    <!-- <Popups>
-        <Popup id="">
-            <PluginWidget id="" plugin_name="" plugin_winid="" />
-        </Popup>
-    </Popups> -->
+    <Popups>
+        <Popup id="settingdialog" title="设置" modal="true" plugin_name="IRSettingUiPlugin" plugin_winid="IR_SettingDialog" />
+    </Popups>
 </Window>

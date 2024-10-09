@@ -45,7 +45,8 @@ private:
     // 添加选项到菜单
     QAction* m_action_main;
     QAction* m_action_brower;
-    QAction* m_action_dm;
+    QAction* m_action_usermanager;
+    QAction* m_action_deviceinfo;
 };
 
 #endif // IR_MenuHeaderWgt_H

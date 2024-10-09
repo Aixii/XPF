@@ -6,7 +6,10 @@
         <Plugin enable="1" plugin_name="XPFDbServicePlugin" plugin_dir="XPFPlugins" plugin_lib="XPFDbServicePlugind"/>
 
         <Plugin enable="1" plugin_name="IRDataBaseManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDataBaseManagerPlugind"/>
+        <Plugin enable="1" plugin_name="IRDevicePortManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDevicePortManagerPlugind"/>
         <Plugin enable="1" plugin_name="IRAccountManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRAccountManagerPlugind"/>
         <Plugin enable="1" plugin_name="IRMenuHeaderPlugin" plugin_dir="IRPlugins" plugin_lib="IRMenuHeaderPlugind"/>
+        <Plugin enable="1" plugin_name="IRTestMainPagePlugin" plugin_dir="IRPlugins" plugin_lib="IRTestMainPagePlugind"/>
+        <Plugin enable="1" plugin_name="IRSettingUiPlugin" plugin_dir="IRPlugins" plugin_lib="IRSettingUiPlugind"/>
     </Plugins>
 </App>

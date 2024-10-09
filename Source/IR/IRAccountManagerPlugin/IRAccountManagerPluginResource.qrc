@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/image">
+        <file>Resource/hide.png</file>
+        <file>Resource/lock.png</file>
+        <file>Resource/show.png</file>
+        <file>Resource/telephone.png</file>
+        <file>Resource/user.png</file>
+        <file>Resource/colorhub.png</file>
+    </qresource>
+</RCC>

@@ -26,15 +26,15 @@ IR_LoginWgt::IR_LoginWgt(QWidget* parent)
 
     ui->label_ForgetPWD->installEventFilter(this);
 
-    QAction* pActAccount  = new QAction(QIcon(":/resource/image/user.png"), "", this);
-    QAction* pActPassword = new QAction(QIcon(":/resource/image/lock.png"), "", this);
+    QAction* pActAccount  = new QAction(QIcon(":/image/Resource/user.png"), "", this);
+    QAction* pActPassword = new QAction(QIcon(":/image/Resource/lock.png"), "", this);
 
     ui->lineEdit_UserName->addAction(pActAccount, QLineEdit::LeadingPosition);
     ui->lineEdit_PassWord->addAction(pActPassword, QLineEdit::LeadingPosition);
 
     ui->lineEdit_PassWord->setEchoMode(QLineEdit::Password);
 
-    QAction* pActShow = new QAction(QIcon(":/resource/image/hide.png"), "", this);
+    QAction* pActShow = new QAction(QIcon(":/image/Resource/hide.png"), "", this);
     pActShow->setData(false);
 
     ui->lineEdit_PassWord->addAction(pActShow, QLineEdit::TrailingPosition);
@@ -42,11 +42,11 @@ IR_LoginWgt::IR_LoginWgt(QWidget* parent)
     QObject::connect(pActShow, &QAction::triggered, this, [this, pActShow]() {
         bool flag = pActShow->data().toBool();
         if (flag) {
-            pActShow->setIcon(QIcon(":/resource/image/hide.png"));
+            pActShow->setIcon(QIcon(":/image/Resource/hide.png"));
             ui->lineEdit_PassWord->setEchoMode(QLineEdit::Password);
         }
         else {
-            pActShow->setIcon(QIcon(":/resource/image/show.png"));
+            pActShow->setIcon(QIcon(":/image/Resource/show.png"));
             ui->lineEdit_PassWord->setEchoMode(QLineEdit::Normal);
         }
         pActShow->setData(!flag);
@@ -71,7 +71,6 @@ IR_LoginWgt::~IR_LoginWgt() {
 }
 
 void IR_LoginWgt::init() {
-    //    m_FingerLogin->init();
 
     QSettings settings("d.ini", QSettings::IniFormat);
     settings.beginGroup("USER");
@@ -139,7 +138,23 @@ void IR_LoginWgt::showMask(bool ok) {
 
 void IR_LoginWgt::slotLoginResult(bool ok, const QString& message) {
     if (!ok) {
-        QMessageBox::critical(this, "错误", message, "确认");
+        QMessageBox::critical(this, u8"错误", message, u8"确认");
+    }
+    else {
+        if (ui->checkBox_RememberPassWord->isChecked()) {
+            QSettings settings("d.ini", QSettings::IniFormat);
+            settings.beginGroup("USER");
+            settings.setValue("usr", ui->lineEdit_UserName->text());
+            settings.setValue("pwd", ui->lineEdit_PassWord->text());
+            settings.endGroup();
+        }
+        else {
+            QSettings settings("d.ini", QSettings::IniFormat);
+            settings.beginGroup("USER");
+            settings.remove("usr");
+            settings.remove("pwd");
+            settings.endGroup();
+        }
     }
 }
 

@@ -19,6 +19,7 @@ private:
     static QWidget*        createPluginWidget(const QDomElement& em);
     static QStackedWidget* createStackWidget(const QDomElement& em);
     static QWidget*        createUi(const QDomElement& em);
+    static QDialog*        createDialog(const QDomElement& em);
 };
 
 #endif // XPFUITOOL_H

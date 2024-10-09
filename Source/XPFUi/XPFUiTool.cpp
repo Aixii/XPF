@@ -48,6 +48,23 @@ QWidget* XPFUiTool::generateWidget(const QString& fileName) {
 
         QWidget* w = createUi(mainElement);
         layout->addWidget(w);
+
+        QDomElement popElement = root.firstChildElement("Popups");
+        if (popElement.isNull()) {
+            break;
+        }
+
+        QDomElement pop = popElement.firstChildElement("Popup");
+        while (!pop.isNull()) {
+            QWidget* dialog = createUi(pop);
+            dialog->setParent(widget);
+            dialog->hide();
+
+            dialog->setWindowFlags(Qt::Dialog | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint);
+            dialog->setStyleSheet("QDialog {background-color: white;}");
+
+            pop = pop.nextSiblingElement("Popup");
+        }
     }
     while (0);
 
@@ -188,6 +205,9 @@ QWidget* XPFUiTool::createUi(const QDomElement& em) {
     else if (tagName == "StackWidget") {
         widget = createStackWidget(em);
     }
+    else if (tagName == "Popup") {
+        widget = createDialog(em);
+    }
     else {
         return nullptr;
     }
@@ -198,4 +218,45 @@ QWidget* XPFUiTool::createUi(const QDomElement& em) {
     }
 
     return widget;
+}
+
+QDialog* XPFUiTool::createDialog(const QDomElement& em) {
+    QDialog* dialog = new QDialog();
+
+    QString title = em.attribute("title");
+    dialog->setWindowTitle(title);
+
+    QString size = em.attribute("size");
+
+    if (!size.isEmpty()) {
+        QStringList sizes = size.split(":");
+
+        int width  = sizes.value(0, "640").toInt();
+        int height = sizes.value(1, "480").toInt();
+        dialog->setFixedSize(width, height);
+    }
+
+    QString pluginName  = em.attribute("plugin_name");
+    QString pluginWinID = em.attribute("plugin_winid");
+    if (pluginName.isEmpty() || pluginWinID.isEmpty()) {
+        return nullptr;
+    }
+    QWidget* content = g_pPluginHelper->getXPFWidgetByPlugin(pluginName, pluginWinID);
+    if (content == nullptr) {
+        QMessageBox::critical(nullptr, u8"错误", QString(u8"无法加载UI, pluginName: %0, winID: %1").arg(pluginName).arg(pluginWinID), u8"确认");
+        return dialog;
+    }
+
+    QString modal = em.attribute("modal");
+    if (modal == "true") {
+        dialog->setModal(true);
+    }
+    else {
+        dialog->setModal(false);
+    }
+
+    dialog->setLayout(new QVBoxLayout(dialog));
+    dialog->layout()->addWidget(content);
+
+    return dialog;
 }

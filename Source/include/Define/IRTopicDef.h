@@ -7,6 +7,7 @@
 #include <vector>
 
 static char TOPIC_IRAccount[] = "TOPIC_IRAccount";
+static char TOPIC_IRTest[]    = "TOPIC_IRTest";
 
 namespace IR {
 enum MSG_ID {
@@ -18,6 +19,22 @@ enum MSG_ID {
 
     //    USER_INFO_QUERY_ID = 0x00001100,
     //    USER_INFO_MODIFY_ID = 0x00001101,
+
+    DEV_SET_PORT_ID   = 0x00002000, // 参数字符串
+    DEV_SET_ZERO_ID   = 0x00002001,
+    DEV_GET_LENGTH_ID = 0x00002002,
+    DEV_START_ID      = 0x00002003,
+    DEV_STOP_ID       = 0x00002004,
+
+    DEV_SET_ZERO_RESP_ID   = 0x00002011,
+    DEV_GET_LENGTH_RESP_ID = 0x00002012,
+    DEV_START_RESP_ID      = 0x00002013,
+    DEV_STOP_RESP_ID       = 0x00002014,
+    DEV_TEST_DATA_RESP_ID  = 0x00002015,
+
+    DEV_CONNECTED_NOTIFY_ID    = 0x00002100,
+    DEV_DISCONNECTED_NOTIFY_ID = 0x00002101,
+
 };
 
 typedef struct LOGIN_RESULT
@@ -32,6 +49,7 @@ typedef struct LOGIN_RESULT
 
     ~LOGIN_RESULT() {
         Q_UNUSED(TOPIC_IRAccount)
+        Q_UNUSED(TOPIC_IRTest)
     }
 
 } st_Login_Result;
@@ -73,7 +91,8 @@ typedef struct USER_INFO
         memset(phone, 0, sizeof(phone));
     }
 
-    ~USER_INFO() { }
+    ~USER_INFO() {
+    }
 
     USER_INFO(const USER_INFO& other) {
         *this = other;
@@ -132,6 +151,22 @@ typedef struct USER_INFO
         return offset + image_size;
     }
 } st_UserInfo;
+
+typedef struct DEV_CMD
+{
+    uint8_t  cmd;
+    uint8_t  irnum;
+    uint32_t arg0;
+    uint32_t arg1;
+    uint32_t arg2;
+    uint32_t arg3;
+
+    DEV_CMD() {
+        memset(this, 0, sizeof(*this));
+    }
+} st_Dev_Cmd;
+
+typedef st_Dev_Cmd st_Dev_Cmd_Resp;
 
 }
 

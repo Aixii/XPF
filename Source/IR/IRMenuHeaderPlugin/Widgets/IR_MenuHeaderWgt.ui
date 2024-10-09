@@ -64,8 +64,8 @@
            <string>菜单</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/resource/image/more.png</normaloff>:/resource/image/more.png</iconset>
+           <iconset resource="../IRMenuHeaderPluginResource.qrc">
+            <normaloff>:/image/Resource/more.png</normaloff>:/image/Resource/more.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -133,8 +133,8 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/resource/image/blue/help.png</normaloff>:/resource/image/blue/help.png</iconset>
+           <iconset resource="../IRMenuHeaderPluginResource.qrc">
+            <normaloff>:/image/Resource/help.png</normaloff>:/image/Resource/help.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -153,8 +153,8 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/resource/image/blue/set.png</normaloff>:/resource/image/blue/set.png</iconset>
+           <iconset resource="../IRMenuHeaderPluginResource.qrc">
+            <normaloff>:/image/Resource/set.png</normaloff>:/image/Resource/set.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -173,8 +173,8 @@
            <string>...</string>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>:/resource/image/admin_user.png</normaloff>:/resource/image/admin_user.png</iconset>
+           <iconset resource="../IRMenuHeaderPluginResource.qrc">
+            <normaloff>:/image/Resource/admin_user.png</normaloff>:/image/Resource/admin_user.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -233,6 +233,8 @@
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../IRMenuHeaderPluginResource.qrc"/>
+ </resources>
  <connections/>
 </ui>
