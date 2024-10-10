@@ -9,7 +9,7 @@ extern IXPFPluginHelper* g_pPluginHelper;
 
 using namespace IR_Test;
 
-//extern IRTestSerialPortManager* g_pTestSerialPortManager;
+// extern IRTestSerialPortManager* g_pTestSerialPortManager;
 
 IR_ParamSettingWgt::IR_ParamSettingWgt(IR_Number number, QWidget* parent)
     : QWidget(parent)
@@ -23,6 +23,13 @@ IR_ParamSettingWgt::IR_ParamSettingWgt(IR_Number number, QWidget* parent)
     ui->pushButton_refresh->setStyleSheet("background: transparent;"
                                           "border:none;"
                                           "background-repeat: no-repeat;");
+
+    ui->doubleSpinBox_startPos->hide();
+    ui->doubleSpinBox_endPos->hide();
+    ui->doubleSpinBox_speed->hide();
+    ui->label_startPos->hide();
+    ui->label_endPos->hide();
+    ui->label_speed->hide();
 }
 
 IR_ParamSettingWgt::~IR_ParamSettingWgt() {
@@ -190,7 +197,35 @@ void IR_ParamSettingWgt::on_pushButton_start_clicked() {
     if (!checkDevStatus()) {
         return;
     }
-    start();
+
+    if (ui->lineEdit_devcode->text().isEmpty()) {
+        ui->lineEdit_devcode->setStyleSheet("border: 1px solid red;");
+        return;
+    }
+
+    double startPos = ui->doubleSpinBox_startPos->value();
+    double endPos   = ui->doubleSpinBox_endPos->value();
+    double speed    = ui->doubleSpinBox_speed->value();
+
+    IR::st_Dev_Cmd cmd;
+    cmd.cmd   = IR_Test::CMD_STRT;
+    cmd.irnum = m_Number;
+
+    // 挡位 精度 起止 速度 模式
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+
+    cmd.arg0 = handler->test_voltage;
+    cmd.arg1 = handler->test_precision;
+    cmd.arg2 = startPos * 10;
+    cmd.arg3 = endPos * 10;
+    cmd.arg4 = (uint16_t)speed;
+    cmd.arg5 = handler->test_mode;
+
+    QByteArray bytes;
+    bytes.resize(sizeof(IR::st_Dev_Cmd));
+
+    memcpy(bytes.data(), &cmd, sizeof(IR::st_Dev_Cmd));
+    g_pPluginHelper->sendMessage(TOPIC_IRTest, IR::DEV_SET_ZERO_ID, bytes);
 }
 
 void IR_ParamSettingWgt::on_pushButton_stop_clicked() {

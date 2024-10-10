@@ -47,6 +47,13 @@ void IRTestMainDataHandler::slotOnMessage(const QString& topic, uint32_t msgid, 
                 QMessageBox::critical(nullptr, u8"失败", QString(u8"杆 %0 设置零点失败").arg(index + 1), u8"确认");
             }
         } break;
+        case IR::DEV_TEST_DATA_RESP_ID: {
+            QByteArray bytes = param.toByteArray();
+
+            IR::st_Dev_Cmd_Resp* resp = reinterpret_cast<IR::st_Dev_Cmd_Resp*>(bytes.data());
+
+            emit sigInfoResp(resp->irnum, resp->arg0 * 0.1, resp->arg1, resp->arg2, resp->arg3);
+        } break;
         default:
             break;
         }

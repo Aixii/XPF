@@ -32,10 +32,6 @@ private slots:
 
     void on_pushButton_Start_clicked();
 
-    void on_comboBox_VolGrade_currentIndexChanged(int index);
-
-    void on_comboBox_ResRange_currentIndexChanged(int index);
-
     void on_comboBox_WorkSpace_currentIndexChanged(const QString& arg1);
 
     void on_comboBox_WorkArea_currentIndexChanged(const QString& arg1);

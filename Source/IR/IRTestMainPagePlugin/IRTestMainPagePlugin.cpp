@@ -32,6 +32,7 @@ void IRTestMainPagePlugin::initAfterPlugin() {
     g_pPluginHelper->subMessage(this, TOPIC_IRTest, IR::DEV_CONNECTED_NOTIFY_ID);
     g_pPluginHelper->subMessage(this, TOPIC_IRTest, IR::DEV_DISCONNECTED_NOTIFY_ID);
     g_pPluginHelper->subMessage(this, TOPIC_IRTest, IR::DEV_SET_ZERO_RESP_ID);
+    g_pPluginHelper->subMessage(this, TOPIC_IRTest, IR::DEV_TEST_DATA_RESP_ID);
 }
 
 QWidget* IRTestMainPagePlugin::getWidget(const QString& WID) {
@@ -52,6 +53,7 @@ void IRTestMainPagePlugin::release() {
     g_pPluginHelper->unsubMessage(this, TOPIC_IRTest, IR::DEV_CONNECTED_NOTIFY_ID);
     g_pPluginHelper->unsubMessage(this, TOPIC_IRTest, IR::DEV_DISCONNECTED_NOTIFY_ID);
     g_pPluginHelper->unsubMessage(this, TOPIC_IRTest, IR::DEV_SET_ZERO_RESP_ID);
+    g_pPluginHelper->unsubMessage(this, TOPIC_IRTest, IR::DEV_TEST_DATA_RESP_ID);
 }
 
 void IRTestMainPagePlugin::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {

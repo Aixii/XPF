@@ -1,16 +1,10 @@
 ﻿#include "IR_TestOperatorWgt.h"
-//#include "IRGLobalStatus.h"
-//#include "IRTestParams.h"
-//#include "IRTestSerialPortManager.h"
+#include "IRTestMainDataHandler.h"
 #include "IR_ImmediateTestWgt.h"
 #include "IR_ParamSettingWgt.h"
-//#include "UserOperator.h"
 #include "ui_IR_TestOperatorWgt.h"
 #include <QMessageBox>
 #include <QSettings>
-//#include <TestDataOperator.h>
-
-//extern IRTestSerialPortManager* g_pTestSerialPortManager;
 
 IR_TestOperatorWgt::IR_TestOperatorWgt(QWidget* parent)
     : QWidget(parent)
@@ -45,10 +39,10 @@ void IR_TestOperatorWgt::init() {
 
     {
         QStringList list = { "500V", "1500V", "2000V", "2500V" };
-        //         ->setValues(list);
         ui->comboBox_VolGrade->addItems(list);
         ui->comboBox_VolGrade->setCurrentText("2500V");
     }
+
     {
         QStringList list = { "0~1000MΩ", "1GΩ~10GΩ" };
         ui->comboBox_ResRange->addItems(list);
@@ -58,6 +52,10 @@ void IR_TestOperatorWgt::init() {
     m_IR1Setting->init();
     m_IR2Setting->init();
     m_IR3Setting->init();
+
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+
+    QObject::connect(handler, &IRTestMainDataHandler::sigInfoResp, this, &IR_TestOperatorWgt::slotInfoResp);
 
     //    QObject::connect(g_pTestSerialPortManager, &IRTestSerialPortManager::sigLengthOuttime, this, [this](uint8_t irnum) {
     //        if (irnum == IR_Test::IR_ALL) {
@@ -370,33 +368,31 @@ void IR_TestOperatorWgt::slotLengthResp(uint8_t irNum, float length) {
 }
 
 void IR_TestOperatorWgt::slotInfoResp(uint8_t irNum, float testPos, uint16_t testV, uint32_t testR, uint16_t testA) {
-    //    QString code = ui->label_testcode->text();
-    //    if (code.isEmpty()) {
-    //        return;
-    //    }
 
-    //    DeviceInfo dev;
+    QString ircode;
+    switch (irNum) {
+    case IR_Test::IR_1:
+        m_ImTestWgt1->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
+        ircode = "1";
+        break;
+    case IR_Test::IR_2:
+        m_ImTestWgt2->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
+        ircode = "2";
+        break;
+    case IR_Test::IR_3:
+        m_ImTestWgt3->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
+        ircode = "3";
+        break;
+    default:
+        break;
+    }
 
-    //    code += "-";
-    //    switch (irNum) {
-    //    case IR_Test::IR_1:
-    //        dev = m_IR1Setting->getDeviceInfo();
-    //        m_ImTestWgt1->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
-    //        code += "1";
-    //        break;
-    //    case IR_Test::IR_2:
-    //        dev = m_IR2Setting->getDeviceInfo();
-    //        m_ImTestWgt2->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
-    //        code += "2";
-    //        break;
-    //    case IR_Test::IR_3:
-    //        dev = m_IR3Setting->getDeviceInfo();
-    //        m_ImTestWgt3->addData(testPos, testV * 0.1, testR * 0.1, testA * 0.1);
-    //        code += "3";
-    //        break;
-    //    default:
-    //        break;
-    //    }
+    QString code = ui->label_testcode->text();
+    if (code.isEmpty()) {
+        return;
+    }
+
+    code += QString("-%0").arg(ircode);
 
     //    QString work_space = ui->comboBox_WorkSpace->currentText();
     //    QString work_area  = ui->comboBox_WorkArea->currentText();
@@ -443,15 +439,6 @@ void IR_TestOperatorWgt::on_pushButton_readIRLength_clicked() {
     //    g_pTestSerialPortManager->sendLengCMD(IR_Test::IR_ALL);
 }
 
-void IR_TestOperatorWgt::on_comboBox_VolGrade_currentIndexChanged(int index) {
-    //    Singleton<IRTestParams>::GetInstance()->setCurVolGrade(index);
-}
-
-void IR_TestOperatorWgt::on_comboBox_ResRange_currentIndexChanged(int index) {
-    //    Singleton<IRTestParams>::GetInstance()->setCurResRange(index);
-    //    refreshResRange();
-}
-
 void IR_TestOperatorWgt::on_comboBox_WorkSpace_currentIndexChanged(const QString& arg1) {
     //    Singleton<IRTestParams>::GetInstance()->setCurWorkSapce(arg1);
 }
@@ -461,11 +448,15 @@ void IR_TestOperatorWgt::on_comboBox_WorkArea_currentIndexChanged(const QString&
 }
 
 void IR_TestOperatorWgt::on_radioButton_Full_clicked() {
-    //    Singleton<IRTestParams>::GetInstance()->setTestMode(IR_Test::MODE_FULL);
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+
+    handler->test_mode = IR_Test::MODE_FULL;
 }
 
 void IR_TestOperatorWgt::on_radioButton_Section_clicked() {
-    //    Singleton<IRTestParams>::GetInstance()->setTestMode(IR_Test::MODE_SECTION);
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+
+    handler->test_mode = IR_Test::MODE_SECTION;
 }
 
 void IR_TestOperatorWgt::on_pushButton_Start_clicked() {
@@ -498,9 +489,34 @@ void IR_TestOperatorWgt::on_pushButton_setZero_clicked() {
 }
 
 void IR_TestOperatorWgt::on_comboBox_VolGrade_currentIndexChanged(const QString& arg1) {
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+
+    if (arg1 == "500V") {
+        handler->test_voltage = 0;
+    }
+    else if (arg1 == "1500V") {
+        handler->test_voltage = 1;
+    }
+    else if (arg1 == "2000V") {
+        handler->test_voltage = 2;
+    } // 默认为 3
+    else /*if (arg1 == "2500V")*/ {
+        handler->test_voltage = 3;
+    }
 }
 
 void IR_TestOperatorWgt::on_comboBox_ResRange_currentIndexChanged(const QString& arg1) {
+
+    IRTestMainDataHandler* handler = Singleton<IRTestMainDataHandler>::GetInstance();
+    if (arg1 == "0~1000MΩ") {
+        handler->test_precision = 0;
+
+    } // 默认为 1
+    else /*if (arg1 == "1GΩ~10GΩ")*/ {
+        handler->test_precision = 1;
+    }
+
+    refreshResRange();
 }
 
 void IR_TestOperatorWgt::on_comboBox_VolGrade_activated(const QString& arg1) {

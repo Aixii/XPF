@@ -133,7 +133,7 @@ void IRDevicePortDataHandler::slotInfoResp(uint8_t irNum, uint16_t testPos, uint
     memcpy(bytes.data(), &resp, sizeof(resp));
     qDebug() << bytes;
 
-    g_pPluginHelper->sendMessage(TOPIC_IRTest, IR::DEV_START_RESP_ID, bytes);
+    g_pPluginHelper->sendMessage(TOPIC_IRTest, IR::DEV_TEST_DATA_RESP_ID, bytes);
 }
 
 void IRDevicePortDataHandler::slotZeroResp(uint8_t irNum, uint8_t respStatus) {
