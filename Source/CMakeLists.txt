@@ -1,30 +1,59 @@
 cmake_minimum_required(VERSION 3.5) 
 
-project(XPF) 
+project(IR_Analysis) 
 
-set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_BUILD_TYPE "Release")
 
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-get_filename_component(XPFDIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
+get_filename_component(PRODIR ${CMAKE_CURRENT_SOURCE_DIR} DIRECTORY)
 
-set(XPFBINDIR ${XPFDIR}/Bin)
-set(XPFSRCDIR ${XPFDIR}/Source)
-set(XPFINCDIR ${XPFSRCDIR}/include)
+
+if(${CMAKE_BUILD_TYPE} STREQUAL "Debug")
+set(PROBINDIR ${PRODIR}/Bin/Debug)
+else()
+set(PROBINDIR ${PRODIR}/Bin/Release)
+endif()
+
+if(MSVC)
+set(PROBINDIR ${PROBINDIR}/MSVC)
+elseif(MINGW)
+set(PROBINDIR ${PROBINDIR}/MINGW)
+endif()
+
+set(PROSRCDIR ${PRODIR}/Source)
+set(PROINCDIR ${PROSRCDIR}/Include)
+set(PROLIBDIR ${PRODIR}/Lib)
+
+set(XPFDIR_INC ${PROSRCDIR}/XPF/Include)
+set(XPFDIR_BIN ${PROBINDIR})
+
+set(WINDEPLOYQT C:/Qt/Qt5.14.2/5.14.2/msvc2017_64/bin/windeployqt.exe)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-include_directories(${XPFINCDIR})
+include_directories(${PROINCDIR})
+#include_directories(${PROINCDIR}/Define)
+#include_directories(${PROINCDIR}/Service)
 
-add_subdirectory(XPFLauncher)
-add_subdirectory(XPFCore)
-add_subdirectory(XPFUi)
-add_subdirectory(XPFTrayMenu)
-add_subdirectory(XPFLoginPlugin)
+#add_subdirectory(PROLauncher)
+#add_subdirectory(PROCore)
+#add_subdirectory(PROUi)
+#add_subdirectory(PROTrayMenuPlugin)
+#add_subdirectory(PROConfigs)
+add_subdirectory(QXlsx)
+add_subdirectory(XPF)
+add_subdirectory(Plugins)
 
-set(CONF_SRC_DIR "${XPFSRCDIR}/config")
-set(CONF_DEST_DIR "${XPFBINDIR}/XPFConfig")
+set(CONF_SRC_DIR "${PROSRCDIR}/Config")
+set(CONF_DEST_DIR "${PROBINDIR}/XPFConfig")
+
+set(RESOURCE_SRC_DIR ${PROSRCDIR}/Resource)
+set(RESOURCE_DEST_DIR ${PROBINDIR}/XPFResource)
+
+set(STYLE_SRC_DIR ${PROSRCDIR}/Style)
+set(STYLE_DEST_DIR ${PROBINDIR}/XPFStyle)
 
 add_custom_target(COPYFILE ALL
     COMMAND ${CMAKE_COMMAND} -P "${CMAKE_BINARY_DIR}/copy_files.cmake"
@@ -47,4 +76,12 @@ file(WRITE "${CMAKE_BINARY_DIR}/copy_files.cmake" "
     set(SRC_DIR \"${CONF_SRC_DIR}\")
     set(DEST_DIR \"${CONF_DEST_DIR}\")
     copy_files(\"\${SRC_DIR}\" \"\${DEST_DIR}\")
+
+	set(SRC_DIR \"${RESOURCE_SRC_DIR}\")
+	set(DEST_DIR \"${RESOURCE_DEST_DIR}\")
+	copy_files(\"\${SRC_DIR}\" \"\${DEST_DIR}\")
+
+	set(SRC_DIR \"${STYLE_SRC_DIR}\")
+	set(DEST_DIR \"${STYLE_DEST_DIR}\")
+	copy_files(\"\${SRC_DIR}\" \"\${DEST_DIR}\")
 ")

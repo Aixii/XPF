@@ -4,17 +4,13 @@
     <AppName>XPF</AppName>
     <MultiStart>false</MultiStart>
     <AppScreens>
-        <Screen size="0:0" fullscreen="true" note="size表示长宽比；fullscreen表示是否全屏；">
+        <Screen size="800:600" fullscreen="true" note="size表示长宽比；fullscreen表示是否全屏；">
             <ID base="10">0</ID>
-            <Name>主屏幕</Name>
+            <Name>安全用具绝缘电阻测量操作系统</Name>
+            <Icon>icon.png</Icon>
             <WidgetHeader height="30">header0</WidgetHeader>
             <WidgetBody>screen0</WidgetBody>
         </Screen>
-        <!--<Screen size="640:480" fullscreen="false">
-            <ID>1</ID>
-            <Name>屏幕2</Name>
-            <WidgetBody>screen1</WidgetBody>
-        </Screen>-->
     </AppScreens>
     <!-- 是否开启任务栏托盘 -->
     <TrayIcon enable="true" />

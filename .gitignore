@@ -4,3 +4,5 @@ Libs/
 Source/.qmake.stash
 Debug/
 Source/XPF.pro.user
+Release/
+Source/project.pro.user 
