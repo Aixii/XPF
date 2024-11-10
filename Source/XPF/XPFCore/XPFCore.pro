@@ -18,6 +18,7 @@ QMAKE_CXXFLAGS += /utf-8
 
 HEADERS += \
     $$XPFDIR_INC/XPFCore/XPFCoreTopicDef.h \
+    ../Include/XPFCore/XPFGlobal.h \
     Private/MessageSenderPrivate.h \
     Private/XPFPluginHelperImplPrivate.h \
     XPFCore.h \

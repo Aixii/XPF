@@ -5,10 +5,10 @@
 #include "XPFPluginHelperImpl.h"
 #include <IXPFPlugin>
 #include <IXPFPluginHelper>
-#include <QLinkedList>
 #include <QMap>
 #include <QMutex>
 #include <QObject>
+#include <list>
 
 namespace XPF {
 
@@ -49,7 +49,7 @@ public:
 
 private:
     // 消息订阅关系
-    QMap<QString, QMap<uint32_t, QLinkedList<IXPFPlugin*>>> m_MsgSubscribes;
+    QMap<QString, QMap<uint32_t, std::list<IXPFPlugin*>>> m_MsgSubscribes;
     //    QMap<uint32_t, QLinkedList<IXPFPlugin*>> m_MsgSubscribes;
     // 消息发送线程
     QThread* m_MsgSendThread;

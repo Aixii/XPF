@@ -74,9 +74,8 @@ bool XPFDbServiceWorker::insert(const QString& tb_name, const QVariantMap& value
     }
     while (0);
 
-
     if (result != nullptr) {
-        SqlResult *rst = new SqlResult;
+        SqlResult* rst = new SqlResult;
         rst->readFromQSqlQuery(query);
         *result = rst;
     }
@@ -150,7 +149,7 @@ bool XPFDbServiceWorker::update(const QString& tb_name, const QVariantMap& value
     while (0);
 
     if (result != nullptr) {
-        SqlResult *rst = new SqlResult;
+        SqlResult* rst = new SqlResult;
         rst->readFromQSqlQuery(query);
         *result = rst;
     }
@@ -203,7 +202,7 @@ bool XPFDbServiceWorker::remove(const QString& tb_name, const QVariantMap& condM
     while (0);
 
     if (result != nullptr) {
-        SqlResult *rst = new SqlResult;
+        SqlResult* rst = new SqlResult;
         rst->readFromQSqlQuery(query);
         *result = rst;
     }
@@ -263,7 +262,7 @@ bool XPFDbServiceWorker::select(const QString& tb_name, const QStringList& field
     while (0);
 
     if (result != nullptr) {
-        SqlResult *rst = new SqlResult;
+        SqlResult* rst = new SqlResult;
         rst->readFromQSqlQuery(query);
         *result = rst;
     }

@@ -2,9 +2,9 @@
 #define XPFPLUGINHELPERIMPL_H
 
 #include <IXPFPluginHelper>
-#include <QLinkedList>
 #include <QMap>
 #include <QVariant>
+#include <list>
 
 namespace XPF {
 class XPFPluginHelperImplPrivate;

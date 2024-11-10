@@ -1,8 +1,8 @@
 ﻿#ifndef MESSAGESENDERPRIVATE_H
 #define MESSAGESENDERPRIVATE_H
 
-#include <IXPFPlugin>
 #include <QObject>
+class IXPFPlugin;
 
 namespace XPF {
 class XPFPluginHelperImplPrivate;

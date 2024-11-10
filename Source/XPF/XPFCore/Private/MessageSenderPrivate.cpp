@@ -1,5 +1,6 @@
 ﻿#include "MessageSenderPrivate.h"
 #include "XPFPluginHelperImplPrivate.h"
+#include <IXPFPlugin>
 
 using namespace XPF;
 
@@ -17,7 +18,7 @@ void MessageSenderPrivate::slotSendAsyncMessage(const QString& topic, uint32_t m
         return;
     }
     if (m_Helper->m_MsgSubscribes.contains(topic) && m_Helper->m_MsgSubscribes[topic].contains(msgid)) {
-        QLinkedList<IXPFPlugin*>& list = m_Helper->m_MsgSubscribes[topic][msgid];
+        std::list<IXPFPlugin*>& list = m_Helper->m_MsgSubscribes[topic][msgid];
         for (IXPFPlugin* plugin : list) {
             plugin->onMessage(topic, msgid, param, sender);
         }

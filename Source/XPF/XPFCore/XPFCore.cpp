@@ -1,8 +1,14 @@
 ﻿#include "XPFCore.h"
 #include "XPFPluginHelperImpl.h"
+
+#include <IXPFConfigException>
+#include <XPFCoreTopicDef>
+#include <XPFGlobal>
+#include <XPFTrayMenuTopicDef>
+#include <XPFUiTopicDef>
+
 #include <QAction>
 #include <QApplication>
-#include <QDesktopWidget>
 #include <QDir>
 #include <QDomDocument>
 #include <QDomElement>
@@ -16,10 +22,14 @@
 #include <QScreen>
 #include <QSharedMemory>
 #include <QSystemTrayIcon>
-#include <XPFCoreTopicDef>
-#include <XPFGlobal>
-#include <XPFTrayMenuTopicDef>
-#include <XPFUiTopicDef>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpression>
+#include <QScreen>
+#else
+#include <QDesktopWidget>
+#include <QRegExp
+#endif
 
 const static char* xpf_core_xml_filename            = "XPFConfig/XPF.xml";
 const static char* xpf_core_pluginload_xml_filename = "XPFConfig/XPFPlugins.xml";
@@ -184,6 +194,50 @@ void XPFCore::quitApp() {
 }
 
 bool XPFCore::initialize() {
+
+#if defined(_WIN32)
+#ifdef QT_NO_DEBUG
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.dll"));
+#else
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.dll"));
+#endif
+#elif defined(UNIX)
+#ifdef QT_NO_DEBUG
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.so"));
+#else
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.so"));
+#endif
+#endif
+    QObject* obj = loader->instance();
+    if (obj) {
+        IXPFPlugin* plugin = qobject_cast<IXPFPlugin*>(obj);
+        if (plugin != nullptr) {
+            QString plugin_name          = plugin->getPluginName();
+            m_Plugins[plugin_name]       = plugin;
+            m_PluginLoaders[plugin_name] = loader;
+            m_PluginsSort.append(plugin);
+            try {
+                plugin->initPlugin(m_XPFHelper);
+            }
+            catch (IXPFConfigException& e) {
+                QMessageBox::critical(nullptr, u8"错误", QString::fromStdString(std::string(e.what())));
+                return false;
+            }
+        }
+        else {
+            QMessageBox::critical(nullptr,
+                                  u8"错误",
+                                  QString(u8"无法加载 %1 E0000001").arg("XPFConfigPlugin"));
+            return false;
+        }
+    }
+    else {
+        QMessageBox::critical(nullptr,
+                              u8"错误",
+                              QString(u8"无法加载 %1 E0000002 %2").arg("XPFConfigPlugin").arg(loader->errorString()));
+        return false;
+    }
+
     if (!load(QString::fromUtf8(xpf_core_xml_filename))) {
         QMessageBox::critical(nullptr, QObject::tr(u8"错误"), XPF::xpf_err_msg, QMessageBox::Close);
         return false;
@@ -349,10 +403,19 @@ bool XPFCore::parseScreenXml(const QDomElement& em) {
                 else {
                     QSize   size(0, 0);
                     QString sizestr = element.attribute("size");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    QRegularExpression reg("(\\d+):(\\d+)");
+
+                    QRegularExpressionMatch match = reg.match(sizestr);
+                    if (match.hasMatch()) {
+                        QString wstr = match.captured(1);
+                        QString hstr = match.captured(2);
+#else
                     QRegExp reg("(\\d+):(\\d+)");
                     if (reg.exactMatch(sizestr)) {
                         QString wstr = reg.cap(1);
                         QString hstr = reg.cap(2);
+#endif
                         if (wstr.isEmpty() || hstr.isEmpty()) {
                             widget->setGeometry(rect);
                             setFullScreen(widget);

@@ -1,6 +1,5 @@
-﻿#include "XPFCore.h"
-#include "CrashException.h"
-#include <XPFGlobal>
+﻿#include "CrashException.h"
+#include "XPFCore.h"
 #include <QApplication>
 #include <QDebug>
 #include <QDir>
@@ -8,13 +7,13 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QString>
-#include <Windows.h>
+#include <XPFGlobal>
+
 #include <codecvt>
 #include <iostream>
 #include <locale>
 
-static void debugHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
-{
+static void debugHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg) {
     Q_UNUSED(context)
     QString stype;
     switch (type) {
@@ -37,8 +36,7 @@ static void debugHandler(QtMsgType type, const QMessageLogContext &context, cons
 
     QFile file("log.txt");
 
-    if(file.open(QIODevice::Append))
-    {
+    if (file.open(QIODevice::Append)) {
         file.write(QString("[%0]: %1\n").arg(stype).arg(msg).toUtf8());
         file.close();
     }
@@ -53,15 +51,25 @@ int main(int argc, char* argv[]) {
 
     XPFCore* core = new XPFCore;
 
-    core->initialize();
+    int ret = 0;
 
-    QObject::connect(core, &XPFCore::sigQuitApp, &app, &QApplication::quit);
+    do {
 
-    // 加载完成之后显示界面
-    core->showScreens();
+        if (!core->initialize()) {
+            ret = -1;
+            break;
+        }
+
+        QObject::connect(core, &XPFCore::sigQuitApp, &app, &QApplication::quit);
+
+        // 加载完成之后显示界面
+        core->showScreens();
+
+        ret = app.exec();
+    }
+    while (0);
 
     // 进入事件循环
-    int ret = app.exec();
 
     delete core;
     core = nullptr;

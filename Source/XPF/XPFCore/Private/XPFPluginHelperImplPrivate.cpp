@@ -1,13 +1,13 @@
 ﻿#include "XPFPluginHelperImplPrivate.h"
 #include "MessageSenderPrivate.h"
 #include "XPFCore.h"
-#include <XPFCoreTopicDef>
 #include <QFileInfo>
+#include <QMapIterator>
 #include <QMutexLocker>
 #include <QString>
 #include <QThread>
 #include <QWidget>
-#include <QMapIterator>
+#include <XPFCoreTopicDef>
 
 extern XPFCore* xpf_core;
 
@@ -53,7 +53,11 @@ void XPFPluginHelperImplPrivate::subMessage(IXPFPlugin* plugin, const QString& t
         qWarning() << "无法订阅空的主题";
         return;
     }
-    if (m_MsgSubscribes[topic][msgid].contains(plugin)) {
+    std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
+
+    auto it = std::find(list.begin(), list.end(), plugin);
+
+    if (it != list.end()) {
         qWarning() << QString("重复订阅主题消息， %0 subscribes %1:%2").arg(plugin->getPluginName()).arg(topic).arg(QString::number(msgid));
         return;
     }
@@ -62,44 +66,38 @@ void XPFPluginHelperImplPrivate::subMessage(IXPFPlugin* plugin, const QString& t
 }
 
 void XPFPluginHelperImplPrivate::unsubMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid) {
-    if(topic.isEmpty())
-    {
-        QMapIterator<QString, QMap<uint32_t, QLinkedList<IXPFPlugin*>>> topicIter(m_MsgSubscribes);
-        while(topicIter.hasNext())
-        {
+    if (topic.isEmpty()) {
+        QMapIterator<QString, QMap<uint32_t, std::list<IXPFPlugin*>>> topicIter(m_MsgSubscribes);
+        while (topicIter.hasNext()) {
             topicIter.next();
-            const QMap<uint32_t, QLinkedList<IXPFPlugin*>> &msgIDSubMap = topicIter.value();
-            QMapIterator<uint32_t, QLinkedList<IXPFPlugin*>> msgidIter(msgIDSubMap);
-            while(msgidIter.hasNext())
-            {
+
+            const QMap<uint32_t, std::list<IXPFPlugin*>>& msgIDSubMap = topicIter.value();
+
+            QMapIterator<uint32_t, std::list<IXPFPlugin*>> msgidIter(msgIDSubMap);
+            while (msgidIter.hasNext()) {
                 msgidIter.next();
-                QLinkedList<IXPFPlugin*> &list = m_MsgSubscribes[topicIter.key()][msgidIter.key()];
-                list.removeOne(plugin);
+                std::list<IXPFPlugin*>& list = m_MsgSubscribes[topicIter.key()][msgidIter.key()];
+
+                list.remove(plugin);
             }
         }
     }
-    else
-    {
-        if (m_MsgSubscribes.contains(topic))
-        {
-            if(msgid == 0)
-            {
-                QMap<uint32_t, QLinkedList<IXPFPlugin*>> &msgIDSub = m_MsgSubscribes[topic];
+    else {
+        if (m_MsgSubscribes.contains(topic)) {
+            if (msgid == 0) {
+                QMap<uint32_t, std::list<IXPFPlugin*>>& msgIDSub = m_MsgSubscribes[topic];
 
-                QMapIterator<uint32_t, QLinkedList<IXPFPlugin*>> msgIDIter(msgIDSub);
-                while(msgIDIter.hasNext())
-                {
+                QMapIterator<uint32_t, std::list<IXPFPlugin*>> msgIDIter(msgIDSub);
+                while (msgIDIter.hasNext()) {
                     msgIDIter.next();
-                    QLinkedList<IXPFPlugin*> &list = m_MsgSubscribes[topic][msgid];
-                    list.removeOne(plugin);
+                    std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
+                    list.remove(plugin);
                 }
             }
-            else
-            {
-                if(m_MsgSubscribes[topic].contains(msgid))
-                {
-                    QLinkedList<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
-                    list.removeOne(plugin);
+            else {
+                if (m_MsgSubscribes[topic].contains(msgid)) {
+                    std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
+                    list.remove(plugin);
                 }
             }
         }
@@ -112,7 +110,8 @@ void XPFPluginHelperImplPrivate::sendMessage(const QString& topic, uint32_t msgi
 
 void XPFPluginHelperImplPrivate::sendSyncMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     if (m_MsgSubscribes.contains(topic) && m_MsgSubscribes[topic].contains(msgid)) {
-        QLinkedList<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
+
+        std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
         for (IXPFPlugin* plugin : list) {
             plugin->onMessage(topic, msgid, param, sender);
         }

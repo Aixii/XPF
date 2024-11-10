@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <App>
     <Plugins>
-        <Plugin enable="1" plugin_name="XPFUi" plugin_dir="XPFPlugins" plugin_lib="XPFUiPlugin"/>
-        <Plugin enable="1" plugin_name="XPFTrayMenu" plugin_dir="XPFPlugins" plugin_lib="XPFTrayMenuPlugin"/>
-        <Plugin enable="1" plugin_name="XPFDbServicePlugin" plugin_dir="XPFPlugins" plugin_lib="XPFDbServicePlugin"/>
-
-        <Plugin enable="1" plugin_name="IRDataBaseManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDataBaseManagerPlugin"/>
-        <Plugin enable="1" plugin_name="IRFingerPortManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRFingerPortManagerPlugin"/>
-        <Plugin enable="1" plugin_name="IRDevicePortManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDevicePortManagerPlugin"/>
-        <Plugin enable="1" plugin_name="IRAccountManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRAccountManagerPlugin"/>
-        <Plugin enable="1" plugin_name="IRMenuHeaderPlugin" plugin_dir="IRPlugins" plugin_lib="IRMenuHeaderPlugin"/>
-        <Plugin enable="1" plugin_name="IRTestMainPagePlugin" plugin_dir="IRPlugins" plugin_lib="IRTestMainPagePlugin"/>
-        <Plugin enable="1" plugin_name="IRSettingUiPlugin" plugin_dir="IRPlugins" plugin_lib="IRSettingUiPlugin"/>
-        <Plugin enable="1" plugin_name="IRDeviceDataManagerPlugin" plugin_dir="IRPlugins" plugin_lib="IRDeviceDataManagerPlugin"/>
+<!--        <Plugin enable="1" plugin_dir="XPFPlugins" plugin_lib="XPFConfigsPlugin"/>-->
+        <Plugin enable="1" plugin_dir="XPFPlugins" plugin_lib="XPFUiPlugin"/>
+        <Plugin enable="1" plugin_dir="XPFPlugins" plugin_lib="XPFTrayMenuPlugin"/>
+        <Plugin enable="1" plugin_dir="XPFPlugins" plugin_lib="XPFDbServicePlugin"/>
     </Plugins>
 </App>

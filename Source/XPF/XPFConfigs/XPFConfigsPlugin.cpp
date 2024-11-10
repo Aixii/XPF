@@ -1,16 +1,37 @@
 ﻿#include "XPFConfigsPlugin.h"
+#include "XPFCoreConfigDef"
 #include <IXPFPluginHelper>
 
 IXPFPluginHelper* g_pPluginHelper = Q_NULLPTR;
 
-XPFConfigsPlugin::XPFConfigsPlugin() {
+XPFConfigsPlugin::XPFConfigsPlugin()
+    : m_ConfigService(nullptr)
+    , m_CoreConfigurator(nullptr) {
 }
 
 XPFConfigsPlugin::~XPFConfigsPlugin() {
+
+    if (m_ConfigService != nullptr) {
+        delete m_ConfigService;
+    }
+    if (m_CoreConfigurator != nullptr) {
+        delete m_CoreConfigurator;
+    }
 }
 
 void XPFConfigsPlugin::initPlugin(IXPFPluginHelper* pluginHelper) {
     g_pPluginHelper = pluginHelper;
+
+    if (m_ConfigService == nullptr) {
+        m_ConfigService = new XPFConfigServiceImpl;
+        g_pPluginHelper->registerService(IID_IXPFConfigService, m_ConfigService);
+    }
+
+    if (m_CoreConfigurator == nullptr) {
+        m_CoreConfigurator = new XPFCoreConfigurator;
+        m_CoreConfigurator->init();
+        m_ConfigService->registerConfigurator(XPF_CORE_CONFIGURATOR_NAME, m_CoreConfigurator);
+    }
 }
 
 void XPFConfigsPlugin::initAfterPlugin() {

@@ -5,12 +5,12 @@
 #include <IXPFPluginHelper>
 #include <QDomElement>
 #include <QLibrary>
-#include <QLinkedList>
 #include <QLocalServer>
 #include <QMap>
 #include <QPluginLoader>
 #include <QSystemTrayIcon>
 #include <QVariant>
+#include <list>
 
 #define STR_XPF_APPNAME "AppName"
 #define STR_XPF_MULTISTART_ENABLE "MultiStart"
