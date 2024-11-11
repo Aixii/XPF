@@ -1,6 +1,5 @@
 ﻿#include "XPFPluginHelperImplPrivate.h"
 #include "MessageSenderPrivate.h"
-#include "XPFCore.h"
 #include <QFileInfo>
 #include <QMapIterator>
 #include <QMutexLocker>
@@ -8,8 +7,6 @@
 #include <QThread>
 #include <QWidget>
 #include <XPFCoreTopicDef>
-
-extern XPFCore* xpf_core;
 
 using namespace XPF;
 
@@ -36,21 +33,9 @@ XPFPluginHelperImplPrivate::~XPFPluginHelperImplPrivate() {
     delete m_ServicesMutex;
 }
 
-QString XPFPluginHelperImplPrivate::getXPFBinDir() {
-    QFileInfo file(".");
-    QString   path = file.absoluteFilePath();
-    return path;
-}
-
-QString XPFPluginHelperImplPrivate::getXPFBinConfigDir() {
-    QFileInfo file("./XPFConfig");
-    QString   path = file.absoluteFilePath();
-    return path;
-}
-
 void XPFPluginHelperImplPrivate::subMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid) {
     if (topic.isEmpty()) {
-        qWarning() << "无法订阅空的主题";
+        qWarning() << tr(u8"无法订阅空的主题");
         return;
     }
     std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
@@ -58,7 +43,7 @@ void XPFPluginHelperImplPrivate::subMessage(IXPFPlugin* plugin, const QString& t
     auto it = std::find(list.begin(), list.end(), plugin);
 
     if (it != list.end()) {
-        qWarning() << QString("重复订阅主题消息， %0 subscribes %1:%2").arg(plugin->getPluginName()).arg(topic).arg(QString::number(msgid));
+        qWarning() << QString(tr(u8"重复订阅主题消息， %0 subscribes %1:%2")).arg(plugin->getPluginName()).arg(topic).arg(QString::number(msgid));
         return;
     }
 
@@ -118,7 +103,7 @@ void XPFPluginHelperImplPrivate::sendSyncMessage(const QString& topic, uint32_t 
     }
 
     if (topic == TOPIC_XPF_CORE && msgid == XPFCore_NameSpace::MSG_ID_QUIT_APP) {
-        xpf_core->quitApp();
+        // 退出
     }
 }
 
@@ -151,15 +136,48 @@ QWidget* XPFPluginHelperImplPrivate::getXPFWidgetById(int screenID, const QStrin
 
 QWidget* XPFPluginHelperImplPrivate::getXPFWidgetByPlugin(const QString& plugin_name, const QString& plugin_winid) {
     QWidget* widget = nullptr;
-    if (xpf_core != nullptr) {
-        IXPFPlugin* plugin = xpf_core->getPlugin(plugin_name);
-        if (plugin != nullptr) {
-            widget = plugin->getWidget(plugin_winid);
-        }
+
+    IXPFPlugin* plugin = m_Plugins.value(plugin_name, nullptr);
+    if (plugin != nullptr) {
+        widget = plugin->getWidget(plugin_winid);
     }
     return widget;
 }
 
 QList<QWidget*> XPFPluginHelperImplPrivate::getXPFScreenWidgets() {
     return m_ScreenWidgets.values();
+}
+
+void XPFPluginHelperImplPrivate::unregisterService(const QString& name) {
+    m_Services.remove(name);
+}
+
+bool XPFPluginHelperImplPrivate::registerPlugin(IXPFPlugin* plugin, void* who) {
+    QString name = plugin->getPluginName();
+    if (name.compare("xpfcore", Qt::CaseInsensitive) == 0) {
+        m_Plugins["xpfcore"] = plugin;
+    }
+    else {
+        IXPFPlugin* core = m_Plugins.value("xpfcore", nullptr);
+        if (core == nullptr || core != who) {
+            return false;
+        }
+    }
+    m_Plugins["xpfcore"] = plugin;
+    return true;
+}
+
+void XPFPluginHelperImplPrivate::unregisterPlugin(IXPFPlugin* plugin, void* who) {
+    QString name = plugin->getPluginName();
+    if (name.compare("xpfcore", Qt::CaseInsensitive) == 0) {
+        return;
+    }
+    else {
+        IXPFPlugin* core = m_Plugins.value("xpfcore", nullptr);
+        if (core == nullptr || core != who) {
+            return;
+        }
+    }
+
+    m_Plugins.remove(name);
 }

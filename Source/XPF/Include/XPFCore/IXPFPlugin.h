@@ -19,10 +19,21 @@ public:
      */
     virtual QWidget* getWidget(const QString& WID) = 0;
 
+    /**
+     * @brief getPluginName 获取插件名
+     * @return
+     */
     virtual QString getPluginName() = 0;
 
+    /**
+     * @brief initPlugin 初始化插件
+     * @param pluginHelper 插件助手
+     */
     virtual void initPlugin(IXPFPluginHelper* pluginHelper) = 0;
 
+    /**
+     * @brief initAfterPlugin 初始化之后
+     */
     virtual void initAfterPlugin() = 0;
 
     /**
@@ -30,6 +41,13 @@ public:
      */
     virtual void release() = 0;
 
+    /**
+     * @brief onMessage 消息处理
+     * @param topic 主题
+     * @param msgid 消息ID
+     * @param param 参数
+     * @param sender 发送者
+     */
     virtual void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) = 0;
 };
 

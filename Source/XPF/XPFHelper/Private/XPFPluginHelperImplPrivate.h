@@ -25,17 +25,30 @@ public:
 
 signals:
     // 发送异步消息
-    void sigSendAsyncMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender);
+    void sigSendAsyncMessage(const QString&  topic,
+                             uint32_t        msgid,
+                             const QVariant& param,
+                             IXPFPlugin*     sender);
 
     // IXPFPluginHelper interface
 public:
-    QString getXPFBinDir() override;
-    QString getXPFBinConfigDir() override;
+    void subMessage(IXPFPlugin*    plugin,
+                    const QString& topic,
+                    uint32_t       msgid = 0) override;
 
-    void subMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid = 0) override;
-    void unsubMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid = 0) override;
-    void sendMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
-    void sendSyncMessage(const QString& topic, uint32_t msgid, const QVariant& param = QVariant(), IXPFPlugin* sender = nullptr) override;
+    void unsubMessage(IXPFPlugin*    plugin,
+                      const QString& topic,
+                      uint32_t       msgid = 0) override;
+
+    void sendMessage(const QString&  topic,
+                     uint32_t        msgid,
+                     const QVariant& param  = QVariant(),
+                     IXPFPlugin*     sender = nullptr) override;
+
+    void sendSyncMessage(const QString&  topic,
+                         uint32_t        msgid,
+                         const QVariant& param  = QVariant(),
+                         IXPFPlugin*     sender = nullptr) override;
 
     bool registerService(const QString& name, IXPFService* servicePtr) override;
 
@@ -46,6 +59,10 @@ public:
     QWidget* getXPFWidgetByPlugin(const QString& plugin_name, const QString& plugin_winid) override;
 
     QList<QWidget*> getXPFScreenWidgets() override;
+
+    void unregisterService(const QString& name) override;
+    bool registerPlugin(IXPFPlugin* plugin, void* who) override;
+    void unregisterPlugin(IXPFPlugin* plugin, void* who) override;
 
 private:
     // 消息订阅关系
@@ -59,6 +76,8 @@ private:
     QMap<int, QWidget*> m_ScreenWidgets;
 
     QMap<QString, IXPFService*> m_Services;
+
+    QMap<QString, IXPFPlugin*> m_Plugins;
 
     QMutex* m_ServicesMutex;
 };

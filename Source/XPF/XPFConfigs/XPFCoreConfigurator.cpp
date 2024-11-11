@@ -11,14 +11,12 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QFile>
-#include <QScreen>
 #include <QVariantList>
 #include <QWidget>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRegularExpression>
 #else
-#include <QDesktopWidget>
 #include <QRegExp>
 #endif
 
@@ -33,7 +31,7 @@ void XPFCoreConfigurator::init() {
     QDomDocument doc("XPFCoreConfig");
 
 #ifndef NDEBUG
-    qDebug() << QDir::currentPath();
+    qDebug() << "Run Path: " << QDir::currentPath();
 #endif
 
     do {

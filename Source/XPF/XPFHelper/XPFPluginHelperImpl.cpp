@@ -19,14 +19,6 @@ void XPFPluginHelperImpl::setXPFScreenWidget(int screenID, QWidget* widget) {
     m_Private->m_ScreenWidgets[screenID] = widget;
 }
 
-QString XPFPluginHelperImpl::getXPFBinDir() {
-    return m_Private->getXPFBinDir();
-}
-
-QString XPFPluginHelperImpl::getXPFBinConfigDir() {
-    return m_Private->getXPFBinConfigDir();
-}
-
 void XPFPluginHelperImpl::subMessage(IXPFPlugin* plugin, const QString& topic, uint32_t msgid) {
     m_Private->subMessage(plugin, topic, msgid);
 }
@@ -65,4 +57,22 @@ QWidget* XPFPluginHelperImpl::getXPFWidgetByPlugin(const QString& plugin_name, c
 
 QList<QWidget*> XPFPluginHelperImpl::getXPFScreenWidgets() {
     return m_Private->getXPFScreenWidgets();
+}
+
+void XPFPluginHelperImpl::unregisterService(const QString& name) {
+    m_Private->unregisterService(name);
+}
+
+bool XPFPluginHelperImpl::registerPlugin(IXPFPlugin* plugin, void* who) {
+    return m_Private->registerPlugin(plugin, who);
+}
+
+void XPFPluginHelperImpl::unregisterPlugin(IXPFPlugin* plugin, void* who) {
+    m_Private->unregisterPlugin(plugin, who);
+}
+
+static IXPFPluginHelper* helper = new XPFPluginHelperImpl;
+
+DLLAPI IXPFPluginHelper* __stdcall XPF::GetXPFPluginHelper() {
+    return helper;
 }

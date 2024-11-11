@@ -7,6 +7,7 @@ include(XPF.pri)
 
 SUBDIRS += \
     XPFConfigs \
+    XPFHelper \
     XPFCore \
     XPFUi \
     XPFTrayMenuPlugin \

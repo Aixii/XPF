@@ -1,1 +1,1 @@
-﻿#include "XPFCore/IXPFPluginHelper.h"
+﻿#include "XPFHelper/IXPFPluginHelper.h"

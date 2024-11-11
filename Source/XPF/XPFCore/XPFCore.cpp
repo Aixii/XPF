@@ -1,5 +1,4 @@
 ﻿#include "XPFCore.h"
-#include "XPFPluginHelperImpl.h"
 
 #include <IXPFConfigException>
 #include <XPFCoreTopicDef>
@@ -34,15 +33,10 @@
 const static char* xpf_core_xml_filename            = "XPFConfig/XPF.xml";
 const static char* xpf_core_pluginload_xml_filename = "XPFConfig/XPFPlugins.xml";
 
-XPFCore* xpf_core = nullptr;
-
 XPFCore::XPFCore(QObject* parent)
     : QObject(parent)
-    , m_XPFHelper(new XPFPluginHelperImpl)
     , m_LocalServer(nullptr)
     , m_TrayIcon(nullptr) {
-
-    xpf_core = this;
 }
 
 XPFCore::~XPFCore() {
@@ -66,6 +60,125 @@ XPFCore::~XPFCore() {
         plugin->release();
         unloadPlugin(plugin->getPluginName());
     }
+}
+
+bool XPFCore::initialize() {
+
+    // 加载配置插件
+#if defined(_WIN32)
+#ifdef QT_NO_DEBUG
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.dll"));
+#else
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.dll"));
+#endif
+#elif defined(UNIX)
+#ifdef QT_NO_DEBUG
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.so"));
+#else
+    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.so"));
+#endif
+#endif
+    QObject* obj = loader->instance();
+    if (obj) {
+        IXPFPlugin* plugin = qobject_cast<IXPFPlugin*>(obj);
+        if (plugin != nullptr) {
+            QString plugin_name          = plugin->getPluginName();
+            m_Plugins[plugin_name]       = plugin;
+            m_PluginLoaders[plugin_name] = loader;
+            m_PluginsSort.append(plugin);
+            try {
+                plugin->initPlugin(m_XPFHelper);
+            }
+            catch (IXPFConfigException& e) {
+                QMessageBox::critical(nullptr, u8"错误", QString::fromStdString(std::string(e.what())));
+                return false;
+            }
+        }
+        else {
+            QMessageBox::critical(nullptr,
+                                  u8"错误",
+                                  QString(u8"无法加载 %1 E0000001").arg("XPFConfigPlugin"));
+            return false;
+        }
+    }
+    else {
+        QMessageBox::critical(nullptr,
+                              u8"错误",
+                              QString(u8"无法加载 %1 E0000002 %2").arg("XPFConfigPlugin").arg(loader->errorString()));
+        return false;
+    }
+
+    if (!load(QString::fromUtf8(xpf_core_xml_filename))) {
+        QMessageBox::critical(nullptr, QObject::tr(u8"错误"), XPF::xpf_err_msg, QMessageBox::Close);
+        return false;
+    }
+
+    // 加载插件
+    loadPlugins();
+
+    // 加载完成之后，遍历插件执行生命周期函数
+    for (IXPFPlugin* plugin : qAsConst(m_PluginsSort)) {
+        qDebug() << plugin->getPluginName() + QString(": initAfter invoke.");
+        plugin->initAfterPlugin();
+    }
+
+    // 初始化界面
+    IXPFPluginHelper* hepler = XPFPluginHelperImpl* helper = dynamic_cast<XPFPluginHelperImpl*>(m_XPFHelper);
+    for (QWidget* widget : helper->getXPFScreenWidgets()) {
+        QLayout* layout = new QVBoxLayout(widget);
+        layout->setContentsMargins(0, 0, 0, 0);
+        widget->setLayout(layout);
+
+        if (!widget->property("Header").toString().isEmpty()) {
+            QWidget* cwhead = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Header").toString());
+            if (cwhead != nullptr) {
+                quint32 headerh = widget->property("HeaderHeight").toUInt();
+                cwhead->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+                cwhead->setFixedHeight(headerh);
+                layout->addWidget(cwhead);
+            }
+            else {
+                widget->setWindowFlags(widget->windowFlags() & ~Qt::FramelessWindowHint);
+            }
+        }
+        QString str = widget->property("Body").toString();
+        if (!widget->property("Body").toString().isEmpty()) {
+            QString  str    = widget->property("Body").toString();
+            QWidget* cwbody = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Body").toString());
+            if (cwbody != nullptr) {
+                layout->addWidget(cwbody);
+            }
+        }
+    }
+
+    // 托盘基础菜单
+    if (m_TrayIcon != nullptr) {
+        using namespace XPFTrayMenu;
+        auto func = [this](QSystemTrayIcon::ActivationReason reason) {
+            switch (reason) {
+            // 左键
+            case QSystemTrayIcon::Trigger:
+                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
+                break;
+            // 右键单击
+            case QSystemTrayIcon::Context:
+                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
+                break;
+            // 双击
+            case QSystemTrayIcon::DoubleClick:
+                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
+                break;
+            // 中键单击
+            case QSystemTrayIcon::MiddleClick:
+                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
+                break;
+            default:
+                break;
+            }
+        };
+        QObject::connect(m_TrayIcon, &QSystemTrayIcon::activated, this, func, Qt::UniqueConnection);
+    }
+    return true;
 }
 
 bool XPFCore::load(const QString& fileName) {
@@ -183,6 +296,9 @@ void XPFCore::unloadPlugin(const QString& pluginName) {
     m_Plugins.remove(pluginName);
 }
 
+void XPFCore::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+}
+
 void XPFCore::showScreens() {
     XPFPluginHelperImpl* helper = dynamic_cast<XPFPluginHelperImpl*>(m_XPFHelper);
     for (QWidget* widget : helper->getXPFScreenWidgets()) {
@@ -191,124 +307,6 @@ void XPFCore::showScreens() {
 }
 void XPFCore::quitApp() {
     emit sigQuitApp();
-}
-
-bool XPFCore::initialize() {
-
-#if defined(_WIN32)
-#ifdef QT_NO_DEBUG
-    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.dll"));
-#else
-    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.dll"));
-#endif
-#elif defined(UNIX)
-#ifdef QT_NO_DEBUG
-    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugin.so"));
-#else
-    QPluginLoader* loader = new QPluginLoader(QString("XPFPlugins/XPFConfigsPlugind.so"));
-#endif
-#endif
-    QObject* obj = loader->instance();
-    if (obj) {
-        IXPFPlugin* plugin = qobject_cast<IXPFPlugin*>(obj);
-        if (plugin != nullptr) {
-            QString plugin_name          = plugin->getPluginName();
-            m_Plugins[plugin_name]       = plugin;
-            m_PluginLoaders[plugin_name] = loader;
-            m_PluginsSort.append(plugin);
-            try {
-                plugin->initPlugin(m_XPFHelper);
-            }
-            catch (IXPFConfigException& e) {
-                QMessageBox::critical(nullptr, u8"错误", QString::fromStdString(std::string(e.what())));
-                return false;
-            }
-        }
-        else {
-            QMessageBox::critical(nullptr,
-                                  u8"错误",
-                                  QString(u8"无法加载 %1 E0000001").arg("XPFConfigPlugin"));
-            return false;
-        }
-    }
-    else {
-        QMessageBox::critical(nullptr,
-                              u8"错误",
-                              QString(u8"无法加载 %1 E0000002 %2").arg("XPFConfigPlugin").arg(loader->errorString()));
-        return false;
-    }
-
-    if (!load(QString::fromUtf8(xpf_core_xml_filename))) {
-        QMessageBox::critical(nullptr, QObject::tr(u8"错误"), XPF::xpf_err_msg, QMessageBox::Close);
-        return false;
-    }
-
-    // 加载插件
-    loadPlugins();
-
-    // 加载完成之后，遍历插件执行生命周期函数
-    for (IXPFPlugin* plugin : qAsConst(m_PluginsSort)) {
-        qDebug() << plugin->getPluginName() + QString(": initAfter invoke.");
-        plugin->initAfterPlugin();
-    }
-
-    // 初始化界面
-    XPFPluginHelperImpl* helper = dynamic_cast<XPFPluginHelperImpl*>(m_XPFHelper);
-    for (QWidget* widget : helper->getXPFScreenWidgets()) {
-        QLayout* layout = new QVBoxLayout(widget);
-        layout->setContentsMargins(0, 0, 0, 0);
-        widget->setLayout(layout);
-
-        if (!widget->property("Header").toString().isEmpty()) {
-            QWidget* cwhead = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Header").toString());
-            if (cwhead != nullptr) {
-                quint32 headerh = widget->property("HeaderHeight").toUInt();
-                cwhead->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-                cwhead->setFixedHeight(headerh);
-                layout->addWidget(cwhead);
-            }
-            else {
-                widget->setWindowFlags(widget->windowFlags() & ~Qt::FramelessWindowHint);
-            }
-        }
-        QString str = widget->property("Body").toString();
-        if (!widget->property("Body").toString().isEmpty()) {
-            QString  str    = widget->property("Body").toString();
-            QWidget* cwbody = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Body").toString());
-            if (cwbody != nullptr) {
-                layout->addWidget(cwbody);
-            }
-        }
-    }
-
-    // 托盘基础菜单
-    if (m_TrayIcon != nullptr) {
-        using namespace XPFTrayMenu;
-        auto func = [this](QSystemTrayIcon::ActivationReason reason) {
-            switch (reason) {
-            // 左键
-            case QSystemTrayIcon::Trigger:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
-                break;
-            // 右键单击
-            case QSystemTrayIcon::Context:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
-                break;
-            // 双击
-            case QSystemTrayIcon::DoubleClick:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
-                break;
-            // 中键单击
-            case QSystemTrayIcon::MiddleClick:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
-                break;
-            default:
-                break;
-            }
-        };
-        QObject::connect(m_TrayIcon, &QSystemTrayIcon::activated, this, func, Qt::UniqueConnection);
-    }
-    return true;
 }
 
 IXPFPlugin* XPFCore::getPlugin(const QString& name) {

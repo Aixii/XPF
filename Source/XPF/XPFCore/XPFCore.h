@@ -12,10 +12,11 @@
 #include <QVariant>
 #include <list>
 
-#define STR_XPF_APPNAME "AppName"
+#define STR_XPF_APPNAME           "AppName"
 #define STR_XPF_MULTISTART_ENABLE "MultiStart"
 
-class XPFCore : public QObject {
+class XPFCore : public QObject
+    , public IXPFPlugin {
     Q_OBJECT
 public:
     explicit XPFCore(QObject* parent = nullptr);
@@ -74,6 +75,17 @@ private:
     QLocalServer* m_LocalServer;
 
     QSystemTrayIcon* m_TrayIcon;
+
+    // IXPFPlugin interface
+public:
+    QWidget* getWidget(const QString& WID) override { Q_UNUSED(WID) }
+
+    QString getPluginName() override { return "xpfcore"; }
+
+    void initPlugin(IXPFPluginHelper* pluginHelper) { Q_UNUSED(pluginHelper) }
+    void initAfterPlugin() override { }
+    void release() override { }
+    void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
 };
 
 #endif // XPFCORE_H
