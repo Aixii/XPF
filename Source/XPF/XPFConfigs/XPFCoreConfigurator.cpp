@@ -1,13 +1,29 @@
 #include "XPFCoreConfigurator.h"
-#include <QDir>
-#include <QDomDocument>
-#include <QFile>
-
 #include "XPFConfigExceptionImpl.h"
 #include "XPFCoreConfigDef"
 
+#ifndef NDEBUG
+#include <QDebug>
+#endif
+
+#include <QApplication>
+#include <QDir>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QFile>
+#include <QScreen>
+#include <QVariantList>
+#include <QWidget>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpression>
+#else
+#include <QDesktopWidget>
+#include <QRegExp>
+#endif
+
 XPFCoreConfigurator::XPFCoreConfigurator(QObject* parent)
-    : QObject { parent } { }
+    : QObject(parent) { }
 
 XPFCoreConfigurator::~XPFCoreConfigurator() {
 }
@@ -16,7 +32,9 @@ void XPFCoreConfigurator::init() {
     /* 读配置文件 */
     QDomDocument doc("XPFCoreConfig");
 
+#ifndef NDEBUG
     qDebug() << QDir::currentPath();
+#endif
 
     do {
         // QFile file("XPF.xml");
@@ -37,7 +55,6 @@ void XPFCoreConfigurator::init() {
             XPFConfigExceptionImpl exp(tr(u8"xpf.xml 不存在"),
                                        XPFConfig::XPF_ERR_CONFIG_FILE_NOEXISTS);
             throw exp;
-            break;
         }
 
         QFile file(filename);
@@ -45,7 +62,6 @@ void XPFCoreConfigurator::init() {
             XPFConfigExceptionImpl exp(tr(u8"xpf.xml 文件打开失败"),
                                        XPFConfig::XPF_ERR_CONFIG_FILE_OPEN_FAILED);
             throw exp;
-            break;
         }
 
         QString content = file.readAll();
@@ -60,63 +76,43 @@ void XPFCoreConfigurator::init() {
         // 获取根元素
         QDomElement root = doc.documentElement();
         if (root.isNull()) {
-            // XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
-            break;
+            XPFConfigExceptionImpl exp(tr(u8"xpf.xml 解析失败"),
+                                       XPFConfig::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
+            throw exp;
         }
 
-        /* 获取AppName并检查是否多次启动 START */
         QDomElement em = root.firstChildElement("AppName");
         if (em.isNull()) {
             QString appName = em.text();
             if (appName.isEmpty()) {
-                // XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
-                break;
+                XPFConfigExceptionImpl exp(tr(u8"xpf.xml 解析失败"),
+                                           XPFConfig::XPF_ERR_CONFIG_FILE_PARSE_FAILED);
+                throw exp;
             }
-            // m_Config[STR_XPF_APPNAME] = appName;
+            setConfigItem(CONFIG_XPF_APP_NAME, appName);
         }
 
         em = root.firstChildElement("MultiStart");
 
         bool enable = (em.text() == "true");
-        if (enable) {
-            // m_Config[STR_XPF_MULTISTART_ENABLE] = true;
-        }
-        else {
-            // m_Config[STR_XPF_MULTISTART_ENABLE] = false;
-            // 检测软件是否已运行。
-            // if (isAlreadyRunning()) {
-            //     if (XPF::xpf_err_code == 0) {
-            //         XPF::setXPFErrorCode(XPF::XPF_ERR_APP_IS_ALREADY_RUNNING);
-            //     }
-            //     break;
-            // }
-        }
-        /* 获取AppName并检查是否多次启动 END */
+        setConfigItem(CONFIG_XPF_MULTISTART, enable);
 
         /* 应用窗体配置 START */
         em = root.firstChildElement("AppScreens");
         if (!em.isNull()) {
-            // parseScreenXml(em);
+            parseScreenXml(em);
         }
         /* 应用窗体配置 END */
 
         /* 托盘 START */
         em = root.firstChildElement("TrayIcon");
         if (!em.isNull() && em.attribute("enable") == "true") {
-            // if (!QSystemTrayIcon::isSystemTrayAvailable()) {
-            //     QMessageBox::warning(nullptr, u8"警告", u8"创建系统托盘失败，当前系统不支持托盘图标");
-            // }
-            // else {
-            //     m_TrayIcon = new QSystemTrayIcon(this);
-
-            //     m_TrayIcon->setIcon(QIcon("./XPFResources/x.png"));
-            //     m_TrayIcon->setToolTip(m_Config.value(STR_XPF_APPNAME, "XPF").toString());
-            //     m_TrayIcon->show();
-            // }
+            setConfigItem(CONFIG_XPF_TRAYICON_ENABLE, true);
+        }
+        else {
+            setConfigItem(CONFIG_XPF_TRAYICON_ENABLE, false);
         }
         /* 托盘 END */
-
-        // ret = true;
     }
     while (0);
 }
@@ -127,4 +123,130 @@ QVariant XPFCoreConfigurator::getConfigItem(const QString& config_key) {
 
 void XPFCoreConfigurator::setConfigItem(const QString& config_key, const QVariant& var) {
     m_Configs[config_key] = var;
+}
+
+bool XPFCoreConfigurator::parseScreenXml(const QDomElement& em) {
+    if (!em.isNull()) {
+        QDomNodeList list = em.elementsByTagName("Screen");
+
+        QVariantList varlist;
+
+        for (int index = 0; index < list.size(); index++) {
+
+            QVariantMap map;
+
+            QDomNode node = list.at(index);
+
+            QDomElement element = node.toElement();
+            if (element.isNull()) {
+                continue;
+            }
+
+            QDomElement e = element.firstChildElement("ID");
+
+            if (e.isNull()) {
+                continue;
+            }
+            int base = e.attribute("base").toInt();
+            if (base != 16 && base != 8 && base != 2) {
+                base = 10;
+            }
+
+            bool ok = false;
+            int  id = e.text().toUInt(&ok, base);
+            if (!ok || id < 0) {
+                continue;
+            }
+
+            map[CONFIG_XPF_SCREEN_ID] = id;
+
+            if (element.attribute("fullscreen") != "false") {
+                map[CONFIG_XPF_SCREEN_ISFULLSCREEN] = true;
+            }
+            else {
+                map[CONFIG_XPF_SCREEN_ISFULLSCREEN] = false;
+                QSize   size(0, 0);
+                QString sizestr = element.attribute("size");
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                QRegularExpression reg("(\\d+):(\\d+)");
+
+                QRegularExpressionMatch match = reg.match(sizestr);
+                if (match.hasMatch()) {
+                    QString wstr = match.captured(1);
+                    QString hstr = match.captured(2);
+#else
+                QRegExp reg("(\\d+):(\\d+)");
+                if (reg.exactMatch(sizestr)) {
+                    QString wstr = reg.cap(1);
+                    QString hstr = reg.cap(2);
+#endif
+                    if (wstr.isEmpty() || hstr.isEmpty()) {
+                        map[CONFIG_XPF_SCREEN_ISFULLSCREEN] = true;
+                    }
+                    else {
+                        size.setWidth(wstr.toInt());
+                        size.setHeight(hstr.toInt());
+                        map[CONFIG_XPF_SCREEN_SIZE] = size;
+                    }
+                }
+                else {
+                    map[CONFIG_XPF_SCREEN_ISFULLSCREEN] = true;
+                }
+            }
+
+            {
+                e = element.firstChildElement("Name");
+
+                QString name = e.text();
+                if (name.isEmpty()) {
+                    name = QString::asprintf("%d", id);
+                }
+                QString newName = name;
+
+                int counter = 0;
+                for (QVariant& var : varlist) {
+                    QVariantMap map = var.toMap();
+                    if (map[CONFIG_XPF_SCREEN_NAME].toString() == newName) {
+                        counter++;
+                        newName = QString("%1_%2").arg(name).arg(counter);
+                    }
+                }
+            }
+
+            {
+                e = element.firstChildElement("WidgetBody");
+                QString widgetName;
+                if (!e.isNull()) {
+                    widgetName = e.text();
+                }
+                map[CONFIG_XPF_SCREEN_BODY] = widgetName;
+            }
+            {
+                e = element.firstChildElement("WidgetHeader");
+
+                quint32 height = 0;
+                QString widgetName;
+                if (!e.isNull()) {
+                    widgetName = e.text();
+                    height     = e.attribute("height").toUInt();
+                    QVariantMap xmap;
+                    xmap[CONFIG_XPF_SCREEN_HEADER_NAME]   = widgetName;
+                    xmap[CONFIG_XPF_SCREEN_HEADER_HEIGHT] = height;
+                    map[CONFIG_XPF_SCREEN_HEADER]         = xmap;
+                }
+            }
+            {
+                e = element.firstChildElement("Icon");
+                if (!e.isNull()) {
+                    QString icon = e.text();
+                    if (!icon.isEmpty()) {
+                        map[CONFIG_XPF_SCREEN_ICON] = icon;
+                    }
+                }
+            }
+            varlist.append(map);
+        } // for
+        setConfigItem(CONFIG_XPF_SCREEN, varlist);
+    }
+    return true;
 }

@@ -28,7 +28,7 @@
 #include <QScreen>
 #else
 #include <QDesktopWidget>
-#include <QRegExp
+#include <QRegExp>
 #endif
 
 const static char* xpf_core_xml_filename            = "XPFConfig/XPF.xml";

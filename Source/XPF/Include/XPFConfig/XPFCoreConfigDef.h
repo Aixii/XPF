@@ -15,10 +15,14 @@
 #define CONFIG_XPF_SCREEN_HEADER       "Header"
 #define CONFIG_XPF_SCREEN_BODY         "Body"
 
+#define CONFIG_XPF_SCREEN_HEADER_HEIGHT "HeaderHeight"
+#define CONFIG_XPF_SCREEN_HEADER_NAME   "HeaderName"
+
 #define XPF_CORE_CONFIGURATOR_NAME "CoreConfig"
 
 namespace XPFConfig {
-enum XPF_CONFIG_ERR {
+enum XPF_CONFIG_ERR
+{
     XPF_ERR_CONFIG_FILE_NOEXISTS     = 1,
     XPF_ERR_CONFIG_FILE_OPEN_FAILED  = 2,
     XPF_ERR_CONFIG_FILE_PARSE_FAILED = 3,
