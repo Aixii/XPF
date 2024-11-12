@@ -1,4 +1,4 @@
-#include "XPFCoreConfigurator.h"
+﻿#include "XPFCoreConfigurator.h"
 #include "XPFConfigExceptionImpl.h"
 #include "XPFCoreConfigDef"
 
@@ -64,7 +64,7 @@ void XPFCoreConfigurator::init() {
 
         QString content = file.readAll();
 
-        if (!doc.setContent(content, false, &content)) {
+        if (!doc.setContent(content)) {
             file.close();
             break;
         }
@@ -80,7 +80,7 @@ void XPFCoreConfigurator::init() {
         }
 
         QDomElement em = root.firstChildElement("AppName");
-        if (em.isNull()) {
+        if (!em.isNull()) {
             QString appName = em.text();
             if (appName.isEmpty()) {
                 XPFConfigExceptionImpl exp(tr(u8"xpf.xml 解析失败"),
@@ -91,7 +91,7 @@ void XPFCoreConfigurator::init() {
         }
 
         em = root.firstChildElement("ID");
-        if (em.isNull()) {
+        if (!em.isNull()) {
             int base = em.attribute("base").toInt(nullptr);
             if (base == 0)
                 base = 10;
@@ -218,6 +218,7 @@ bool XPFCoreConfigurator::parseScreenXml(const QDomElement& em) {
                         newName = QString("%1_%2").arg(name).arg(counter);
                     }
                 }
+                map[CONFIG_XPF_SCREEN_NAME] = newName;
             }
 
             {

@@ -54,8 +54,10 @@ private:
     void reloadPlugin(const QString& pluginName);
     void unloadPlugin(const QString& pluginName);
 
-    void registerPlugin(IXPFPlugin* plugin);
+    bool registerPlugin(IXPFPlugin* plugin);
     void unregisterPlugin(IXPFPlugin* plugin);
+
+    bool registerScreen(QWidget* screen);
 
 private:
     // 应用配置
@@ -74,6 +76,9 @@ private:
     QLocalServer* m_LocalServer;
 
     QSystemTrayIcon* m_TrayIcon;
+
+private slots:
+    void slotTrayIconActive(QSystemTrayIcon::ActivationReason reason);
 
     // IXPFPlugin interface
 public:

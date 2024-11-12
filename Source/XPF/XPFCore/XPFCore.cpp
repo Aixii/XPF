@@ -26,7 +26,6 @@
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
 #include <QRegularExpression>
-#include <QScreen>
 #else
 #include <QDesktopWidget>
 #include <QRegExp>
@@ -38,15 +37,9 @@ XPFCore::XPFCore(QObject* parent)
     : QObject(parent)
     , m_LocalServer(nullptr)
     , m_TrayIcon(nullptr) {
-
-    m_XPFHelper = XPF::GetXPFPluginHelper();
 }
 
 XPFCore::~XPFCore() {
-    //    XPFPluginHelperImpl* helper = dynamic_cast<XPFPluginHelperImpl*>(m_XPFHelper);
-    //    for (QWidget* widget : helper->getXPFScreenWidgets()) {
-    //        delete widget;
-    //    }
 
     if (m_LocalServer != nullptr) {
         m_LocalServer->close();
@@ -58,17 +51,28 @@ XPFCore::~XPFCore() {
         m_TrayIcon = nullptr;
     }
 
-    for (IXPFPlugin* plugin : m_PluginsSort) {
-        m_XPFHelper->unsubMessage(plugin);
+    for (int index = m_PluginsSort.size() - 1; index > 0; index--) {
+        IXPFPlugin* plugin = m_PluginsSort.at(index);
         plugin->release();
         unloadPlugin(plugin->getPluginName());
     }
+
+    delete m_XPFHelper;
 }
 
 bool XPFCore::initialize() {
 
+    m_XPFHelper = XPF::GetXPFPluginHelper();
+    if (m_XPFHelper == nullptr) {
+        XPF::setXPFErrorCode(XPF::XPF_ERR_HELPER_LOAD_FAILED);
+        return false;
+    }
+
     // 首先将自己注册进去
-    registerPlugin(this);
+    if (!registerPlugin(this)) {
+        XPF::setXPFErrorCode(XPF::XPF_ERR_CORE_ABNORMAL);
+        return false;
+    }
 
     // 加载配置插件
 #if defined(_WIN32)
@@ -102,26 +106,24 @@ bool XPFCore::initialize() {
                 plugin->initPlugin(m_XPFHelper);
             }
             catch (IXPFConfigException& e) {
-                QMessageBox::critical(nullptr, u8"错误", QString::fromStdString(std::string(e.what())));
+                qCritical() << QString::fromStdString(std::string(e.what()));
+                XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_INIT_FAILED);
+                XPF::xpf_err_msg.append("，");
+                XPF::xpf_err_msg.append(QString::fromStdString(std::string(e.what())));
                 return false;
             }
         }
         else {
-            QMessageBox::critical(nullptr,
-                                  u8"错误",
-                                  QString(u8"无法加载 %1 E0000001").arg("XPFConfigPlugin"));
+            XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_PLUGIN_LOAD_FAILED);
             return false;
         }
     }
     else {
-        QMessageBox::critical(nullptr,
-                              u8"错误",
-                              QString(u8"无法加载 %1 E0000002 %2").arg("XPFConfigPlugin").arg(loader->errorString()));
+        XPF::setXPFErrorCode(XPF::XPF_ERR_CONFIG_PLUGIN_LOAD_FAILED);
         return false;
     }
 
     if (!load()) {
-        QMessageBox::critical(nullptr, QObject::tr(u8"错误"), XPF::xpf_err_msg, QMessageBox::Close);
         return false;
     }
 
@@ -129,7 +131,7 @@ bool XPFCore::initialize() {
     loadPlugins();
 
     // 加载完成之后，遍历插件执行生命周期函数
-    for (IXPFPlugin* plugin : qAsConst(m_PluginsSort)) {
+    for (IXPFPlugin* plugin : m_PluginsSort) {
         qDebug() << plugin->getPluginName() + QString(": initAfter invoke.");
         plugin->initAfterPlugin();
     }
@@ -166,30 +168,7 @@ bool XPFCore::initialize() {
 
     // 托盘基础菜单
     if (m_TrayIcon != nullptr) {
-        using namespace XPFTrayMenu;
-        auto func = [this](QSystemTrayIcon::ActivationReason reason) {
-            switch (reason) {
-            // 左键
-            case QSystemTrayIcon::Trigger:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
-                break;
-            // 右键单击
-            case QSystemTrayIcon::Context:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
-                break;
-            // 双击
-            case QSystemTrayIcon::DoubleClick:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
-                break;
-            // 中键单击
-            case QSystemTrayIcon::MiddleClick:
-                m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
-                break;
-            default:
-                break;
-            }
-        };
-        QObject::connect(m_TrayIcon, &QSystemTrayIcon::activated, this, func, Qt::UniqueConnection);
+        QObject::connect(m_TrayIcon, &QSystemTrayIcon::activated, this, &XPFCore::slotTrayIconActive, Qt::UniqueConnection);
     }
     return true;
 }
@@ -313,7 +292,7 @@ bool XPFCore::load() {
                     widget->setWindowTitle(name);
                 }
 
-                m_XPFHelper->registerScreenWidget(widget, this);
+                registerScreen(widget);
 
                 {
                     QString widgetName = map[CONFIG_XPF_SCREEN_BODY].toString();
@@ -390,12 +369,57 @@ void XPFCore::unloadPlugin(const QString& pluginName) {
     loader->unload();
 }
 
-void XPFCore::registerPlugin(IXPFPlugin* plugin) {
-    m_XPFHelper->registerPlugin(plugin, dynamic_cast<IXPFPlugin*>(this));
+bool XPFCore::registerPlugin(IXPFPlugin* plugin) {
+    if (!m_XPFHelper->registerPlugin(plugin, dynamic_cast<IXPFPlugin*>(this))) {
+        if (plugin == dynamic_cast<IXPFPlugin*>(this)) {
+            return false;
+        }
+        QMessageBox box(QMessageBox::Warning,
+                        tr(u8"警告"),
+                        QString(tr(u8"插件未注册：%0").arg(plugin->getPluginName())));
+
+        box.addButton(tr(u8"确认"), QMessageBox::YesRole);
+    }
+    return true;
 }
 
 void XPFCore::unregisterPlugin(IXPFPlugin* plugin) {
     m_XPFHelper->unregisterPlugin(plugin, dynamic_cast<IXPFPlugin*>(this));
+}
+
+bool XPFCore::registerScreen(QWidget* screen) {
+    if (!m_XPFHelper->registerScreenWidget(screen, dynamic_cast<IXPFPlugin*>(this))) {
+        QMessageBox box(QMessageBox::Warning,
+                        tr(u8"警告"),
+                        QString(tr(u8"屏幕窗口注册失败：%0").arg(screen->objectName())));
+
+        box.addButton(tr(u8"确认"), QMessageBox::YesRole);
+    }
+    return true;
+}
+
+void XPFCore::slotTrayIconActive(QSystemTrayIcon::ActivationReason reason) {
+    using namespace XPFTrayMenu;
+    switch (reason) {
+    // 左键
+    case QSystemTrayIcon::Trigger:
+        m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_LEFT_CLICKED);
+        break;
+    // 右键单击
+    case QSystemTrayIcon::Context:
+        m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_RIGHT_CLICKED);
+        break;
+    // 双击
+    case QSystemTrayIcon::DoubleClick:
+        m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_DOUBLE_CLICKED);
+        break;
+    // 中键单击
+    case QSystemTrayIcon::MiddleClick:
+        m_XPFHelper->sendSyncMessage(TOPIC_XPF_TRAYMENU, MSG_ID_ICON_ACTION, TRAY_ICON_ACTION_MIDDLE_CLICKED);
+        break;
+    default:
+        break;
+    }
 }
 
 void XPFCore::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {

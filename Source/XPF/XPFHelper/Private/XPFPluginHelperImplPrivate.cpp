@@ -14,7 +14,6 @@ using namespace XPF;
 XPFPluginHelperImplPrivate::XPFPluginHelperImplPrivate(QObject* parent)
     : QObject(parent) {
     m_ServicesMutex = new QMutex;
-
     m_MsgSendThread = new QThread(this);
     m_MsgSender     = new MessageSenderPrivate(this);
 
@@ -28,9 +27,10 @@ XPFPluginHelperImplPrivate::XPFPluginHelperImplPrivate(QObject* parent)
 
 XPFPluginHelperImplPrivate::~XPFPluginHelperImplPrivate() {
     m_MsgSendThread->terminate();
+    m_MsgSendThread->wait();
+
     delete m_MsgSendThread;
     delete m_MsgSender;
-
     delete m_ServicesMutex;
 }
 

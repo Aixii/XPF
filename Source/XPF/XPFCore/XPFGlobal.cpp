@@ -10,6 +10,7 @@ static QMap<int32_t, QString> xpf2string = {
     { XPF::XPF_ERR_CONFIG_MISSING, QObject::tr(u8"配置项缺失或配置文件缺失") },
     { XPF::XPF_ERR_CONFIG_SERVICE, QObject::tr(u8"配置服务未加载") },
     { XPF::XPF_ERR_APP_IS_ALREADY_RUNNING, QObject::tr(u8"软件已经启动了") },
+    { XPF::XPF_ERR_CONFIG_INIT_FAILED, QObject::tr(u8"初始化配置失败") },
 };
 
 namespace XPF {
