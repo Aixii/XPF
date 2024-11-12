@@ -30,7 +30,7 @@ CONFIG(debug, debug|release){
 PRODIR_BIN = $$PRODIR/Bin/$$MAKE_TYPE/$$COMPILER
 PRODIR_SRC = $$PWD
 PRODIR_INC = $$PRODIR_SRC/Include
-PRODIR_LIB = $$PRODIR/Lib
+PRODIR_LIB = $$PRODIR/Lib/$$COMPILER
 
 PRODIR_BIN = $$absolute_path($$PRODIR_BIN)
 
