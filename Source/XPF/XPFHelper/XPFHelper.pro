@@ -15,9 +15,9 @@ CONFIG(debug, debug|release){
     TARGET = XPFHelper
 }
 
-DEFINES += DLL_EXPORTS
+DEFINES += HELPER_EXPORTS
 
-DESTDIR = $$DESTDIR
+DESTDIR = $$DESTDIR_LIB
 
 HEADERS += \
     ../Include/XPFHelper/IXPFPluginHelper.h \
@@ -30,4 +30,6 @@ SOURCES += \
     Private/MessageSenderPrivate.cpp \
     Private/XPFPluginHelperImplPrivate.cpp \
     XPFPluginHelperImpl.cpp
+
+QMAKE_POST_LINK += xcopy /D /F /E /Y \"$${DESTDIR}/$${TARGET}.dll\" \"$${PRODIR_BIN}/\"
 

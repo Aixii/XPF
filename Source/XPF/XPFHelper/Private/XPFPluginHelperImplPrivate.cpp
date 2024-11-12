@@ -1,5 +1,6 @@
 ﻿#include "XPFPluginHelperImplPrivate.h"
 #include "MessageSenderPrivate.h"
+#include <QDebug>
 #include <QFileInfo>
 #include <QMapIterator>
 #include <QMutexLocker>
@@ -101,10 +102,6 @@ void XPFPluginHelperImplPrivate::sendSyncMessage(const QString& topic, uint32_t 
             plugin->onMessage(topic, msgid, param, sender);
         }
     }
-
-    if (topic == TOPIC_XPF_CORE && msgid == XPFCore_NameSpace::MSG_ID_QUIT_APP) {
-        // 退出
-    }
 }
 
 bool XPFPluginHelperImplPrivate::registerService(const QString& name, IXPFService* servicePtr) {
@@ -114,6 +111,10 @@ bool XPFPluginHelperImplPrivate::registerService(const QString& name, IXPFServic
     }
     m_Services[name] = servicePtr;
     return true;
+}
+
+IXPFPlugin* XPFPluginHelperImplPrivate::getPlugin(const QString& name) {
+    return m_Plugins.value(name, nullptr);
 }
 
 IXPFService* XPFPluginHelperImplPrivate::getService(const QString& name) {
@@ -155,15 +156,16 @@ void XPFPluginHelperImplPrivate::unregisterService(const QString& name) {
 bool XPFPluginHelperImplPrivate::registerPlugin(IXPFPlugin* plugin, void* who) {
     QString name = plugin->getPluginName();
     if (name.compare("xpfcore", Qt::CaseInsensitive) == 0) {
-        m_Plugins["xpfcore"] = plugin;
+        name = "xpfcore";
     }
     else {
         IXPFPlugin* core = m_Plugins.value("xpfcore", nullptr);
+
         if (core == nullptr || core != who) {
             return false;
         }
     }
-    m_Plugins["xpfcore"] = plugin;
+    m_Plugins[name] = plugin;
     return true;
 }
 
@@ -180,4 +182,24 @@ void XPFPluginHelperImplPrivate::unregisterPlugin(IXPFPlugin* plugin, void* who)
     }
 
     m_Plugins.remove(name);
+}
+
+bool XPFPluginHelperImplPrivate::registerScreenWidget(QWidget* widget, void* who) {
+    IXPFPlugin* core = m_Plugins.value("xpfcore", nullptr);
+    if (core == nullptr || core != who) {
+        return false;
+    }
+    int id = widget->property("ID").toInt();
+
+    m_ScreenWidgets[id] = widget;
+    return true;
+}
+
+void XPFPluginHelperImplPrivate::unregisterScrennWidget(QWidget* widget, void* who) {
+    IXPFPlugin* core = m_Plugins.value("xpfcore", nullptr);
+    if (core == nullptr || core != who) {
+        return;
+    }
+    int id = widget->property("ID").toInt();
+    m_ScreenWidgets.remove(id);
 }

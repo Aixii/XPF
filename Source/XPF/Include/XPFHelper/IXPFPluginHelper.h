@@ -4,6 +4,12 @@
 #include <QString>
 #include <QVariant>
 
+#ifdef HELPER_EXPORTS
+#define DLLAPI __declspec(dllexport)
+#else
+#define DLLAPI __declspec(dllimport)
+#endif
+
 class IXPFPlugin;
 class IXPFService;
 
@@ -86,6 +92,23 @@ public:
     virtual void unregisterPlugin(IXPFPlugin *plugin, void *who) = 0;
 
     /**
+     * @brief registerScreenWidget 注册屏幕窗口
+     * @param widget 窗口对象指针
+     * @param who 谁注册的
+     * @return
+     */
+    virtual bool registerScreenWidget(QWidget *widget, void *who) = 0;
+
+    /**
+     * @brief unregisterScrennWidget 注销屏幕窗口
+     * @param widget 窗口对象指针
+     * @param who 谁注销的
+     */
+    virtual void unregisterScrennWidget(QWidget *widget, void *who) = 0;
+
+    virtual IXPFPlugin* getPlugin(const QString &name) = 0;
+
+    /**
      * @brief getService 获取服务对象
      * @param iid 服务接口对象id
      * @return
@@ -122,5 +145,9 @@ public:
     virtual QList<QWidget*> getXPFScreenWidgets() = 0;
     // clang-format on
 };
+
+namespace XPF {
+extern "C" DLLAPI IXPFPluginHelper* __stdcall GetXPFPluginHelper();
+}
 
 #endif // IXPFPLUGINHELPER_H

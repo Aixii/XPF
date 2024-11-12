@@ -39,6 +39,10 @@ bool XPFPluginHelperImpl::registerService(const QString& name, IXPFService* serv
     return m_Private->registerService(name, servicePtr);
 }
 
+IXPFPlugin* XPFPluginHelperImpl::getPlugin(const QString& name) {
+    return m_Private->getPlugin(name);
+}
+
 IXPFService* XPFPluginHelperImpl::getService(const QString& name) {
     return m_Private->getService(name);
 }
@@ -71,8 +75,19 @@ void XPFPluginHelperImpl::unregisterPlugin(IXPFPlugin* plugin, void* who) {
     m_Private->unregisterPlugin(plugin, who);
 }
 
-static IXPFPluginHelper* helper = new XPFPluginHelperImpl;
+bool XPFPluginHelperImpl::registerScreenWidget(QWidget* widget, void* who) {
+    return m_Private->registerScreenWidget(widget, who);
+}
+
+void XPFPluginHelperImpl::unregisterScrennWidget(QWidget* widget, void* who) {
+    m_Private->unregisterScrennWidget(widget, who);
+}
+
+static IXPFPluginHelper* helper = nullptr;
 
 DLLAPI IXPFPluginHelper* __stdcall XPF::GetXPFPluginHelper() {
+    if (helper == nullptr) {
+        helper = new XPFPluginHelperImpl;
+    }
     return helper;
 }

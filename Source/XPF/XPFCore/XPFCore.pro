@@ -16,6 +16,14 @@ QMAKE_CFLAGS += /utf-8
 QMAKE_CXXFLAGS += /utf-8
 }
 
+CONFIG(debug, debug|release){
+    TARGET = XPFd
+    LIBS += -L$$PRODIR_LIB -lXPFHelperd
+} else {
+    TARGET = XPF
+    LIBS += -L$$PRODIR_LIB -lXPFHelper
+}
+
 HEADERS += \
     $$XPFDIR_INC/XPFCore/XPFCoreTopicDef.h \
     ../Include/XPFCore/XPFGlobal.h \

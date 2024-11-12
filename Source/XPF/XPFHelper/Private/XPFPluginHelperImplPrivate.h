@@ -52,6 +52,7 @@ public:
 
     bool registerService(const QString& name, IXPFService* servicePtr) override;
 
+    IXPFPlugin*  getPlugin(const QString& name) override;
     IXPFService* getService(const QString& name) override;
 
     QWidget* getXPFScreenWidget(int screenID) override;
@@ -63,6 +64,8 @@ public:
     void unregisterService(const QString& name) override;
     bool registerPlugin(IXPFPlugin* plugin, void* who) override;
     void unregisterPlugin(IXPFPlugin* plugin, void* who) override;
+    bool registerScreenWidget(QWidget* widget, void* who) override;
+    void unregisterScrennWidget(QWidget* widget, void* who) override;
 
 private:
     // 消息订阅关系

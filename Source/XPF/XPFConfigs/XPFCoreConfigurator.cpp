@@ -90,6 +90,15 @@ void XPFCoreConfigurator::init() {
             setConfigItem(CONFIG_XPF_APP_NAME, appName);
         }
 
+        em = root.firstChildElement("ID");
+        if (em.isNull()) {
+            int base = em.attribute("base").toInt(nullptr);
+            if (base == 0)
+                base = 10;
+            int id = em.text().toInt(nullptr, base);
+            setConfigItem(CONFIG_XPF_APP_ID, id);
+        }
+
         em = root.firstChildElement("MultiStart");
 
         bool enable = (em.text() == "true");
