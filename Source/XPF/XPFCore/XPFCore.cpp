@@ -2,6 +2,7 @@
 
 #include <IXPFConfigException>
 #include <IXPFConfigService>
+#include <IXPFErrorException>
 #include <XPFCoreConfigDef>
 #include <XPFCoreTopicDef>
 #include <XPFGlobal>
@@ -33,10 +34,28 @@
 
 const static char* xpf_core_pluginload_xml_filename = "XPFConfig/XPFPlugins.xml";
 
+extern QMap<int32_t, QString> xpf_err_2_string;
+
 XPFCore::XPFCore(QObject* parent)
     : QObject(parent)
     , m_LocalServer(nullptr)
     , m_TrayIcon(nullptr) {
+#ifdef OUT_ERR
+    QFile file("ERROR.csv");
+
+    if (file.open(QIODevice::WriteOnly | QIODevice::Truncate)) {
+        file.write(QString(u8"错误码,描述\n").toUtf8());
+        QMapIterator<int32_t, QString> iter(xpf_err_2_string);
+        while (iter.hasNext()) {
+            iter.next();
+            int     code = iter.key();
+            QString des  = iter.value();
+            file.write(QString("%0,%1\n").arg(code).arg(des).toUtf8());
+        }
+    }
+
+    file.close();
+#endif
 }
 
 XPFCore::~XPFCore() {
@@ -128,12 +147,24 @@ bool XPFCore::initialize() {
     }
 
     // 加载插件
-    loadPlugins();
+    bool ok = loadPlugins();
+    if (!ok) {
+        return false;
+    }
 
     // 加载完成之后，遍历插件执行生命周期函数
     for (IXPFPlugin* plugin : m_PluginsSort) {
         qDebug() << plugin->getPluginName() + QString(": initAfter invoke.");
-        plugin->initAfterPlugin();
+
+        try {
+            plugin->initAfterPlugin();
+        }
+        catch (IXPFErrorException& e) {
+            QMessageBox::critical(nullptr,
+                                  u8"错误",
+                                  QString(u8"%1").arg(QString(e.what())));
+            return false;
+        }
     }
 
     // 初始化界面
@@ -156,9 +187,9 @@ bool XPFCore::initialize() {
                 widget->setWindowFlags(widget->windowFlags() & ~Qt::FramelessWindowHint);
             }
         }
-        QString str = widget->property("Body").toString();
         if (!widget->property("Body").toString().isEmpty()) {
-            QString  str    = widget->property("Body").toString();
+            QString str = widget->property("Body").toString();
+
             QWidget* cwbody = helper->getXPFWidgetByPlugin("XPFUi", widget->property("Body").toString());
             if (cwbody != nullptr) {
                 layout->addWidget(cwbody);
@@ -215,9 +246,7 @@ bool XPFCore::load() {
         /* 获取AppName并检查是否多次启动 END */
 
         /* 应用窗体配置 START */
-
         do {
-
             auto setFullScreen = [](QWidget* widget) {
                 widget->showMaximized();
                 widget->setWindowState(Qt::WindowMaximized);
@@ -426,7 +455,7 @@ void XPFCore::onMessage(const QString& topic, uint32_t msgid, const QVariant& pa
     Q_UNUSED(param)
     Q_UNUSED(sender)
     if (topic == TOPIC_XPF_CORE && msgid == XPFCore_NameSpace::MSG_ID_QUIT_APP) {
-        // TODO 退出
+        emit sigQuitApp();
     }
 }
 
@@ -467,7 +496,7 @@ bool XPFCore::isAlreadyRunning() {
     return false;
 }
 
-void XPFCore::loadPlugins() {
+bool XPFCore::loadPlugins() {
     QDomDocument doc("load_config");
 
     QFile file(QString::fromUtf8(xpf_core_pluginload_xml_filename));
@@ -476,12 +505,14 @@ void XPFCore::loadPlugins() {
         file.close();
     }
     else {
-        return;
+        return false;
     }
 
     QDomElement root       = doc.documentElement();
     QDomElement plugins_em = root.firstChildElement("Plugins");
     QDomElement plugin_em  = plugins_em.firstChildElement("Plugin");
+
+    bool ok = true;
 
     while (!plugin_em.isNull()) {
         QString plugin_lib = plugin_em.attribute("plugin_lib");
@@ -511,25 +542,38 @@ void XPFCore::loadPlugins() {
                 }
                 else {
                     QString plugin_name = plugin->getPluginName();
+                    qDebug() << "register plugin: " << plugin_name;
 
                     registerPlugin(plugin);
 
                     m_PluginLoaders[plugin_name] = loader;
                     m_PluginsSort.append(plugin);
-                    plugin->initPlugin(m_XPFHelper);
+
+                    try {
+                        plugin->initPlugin(m_XPFHelper);
+                    }
+                    catch (IXPFErrorException& e) {
+                        QMessageBox::critical(nullptr,
+                                              u8"错误",
+                                              QString(u8"致命错误：%1").arg(QString(e.what())));
+                        ok = false;
+                        break;
+                    }
                 }
             }
             else {
-                QMessageBox::critical(nullptr,
-                                      u8"错误",
-                                      QString(u8"无法加载 %1 E0000001").arg(plugin_lib));
+                XPF::setXPFErrorCode(XPF::XPF_ERR_PLUGIN_LOAD_FAILED);
+                ok = false;
+                break;
             }
         }
         else {
-            QMessageBox::critical(nullptr,
-                                  u8"错误",
-                                  QString(u8"无法加载 %1 E0000002 %2").arg(plugin_lib).arg(loader->errorString()));
+            XPF::setXPFErrorCode(XPF::XPF_ERR_PLUGIN_LOAD_FAILED);
+            ok = false;
+            break;
         }
         plugin_em = plugin_em.nextSiblingElement("Plugin");
     }
+
+    return ok;
 }

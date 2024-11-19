@@ -46,7 +46,7 @@ private:
     /**
      * @brief loadPlugins 加载插件
      */
-    void loadPlugins();
+    bool loadPlugins();
 
     // 应用程序启动加载
     bool load();

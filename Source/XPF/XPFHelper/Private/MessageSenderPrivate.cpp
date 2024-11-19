@@ -2,6 +2,8 @@
 #include "XPFPluginHelperImplPrivate.h"
 #include <IXPFPlugin>
 
+#include <QDebug>
+
 using namespace XPF;
 
 MessageSenderPrivate::MessageSenderPrivate(QObject* parent)
@@ -16,6 +18,10 @@ void MessageSenderPrivate::bindHelper(XPFPluginHelperImplPrivate* helper) {
 void MessageSenderPrivate::slotSendAsyncMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     if (m_Helper == nullptr) {
         return;
+    }
+
+    if (topic == "TOPIC_PICTURE_SAVE") {
+        qDebug() << "hh";
     }
     if (m_Helper->m_MsgSubscribes.contains(topic) && m_Helper->m_MsgSubscribes[topic].contains(msgid)) {
         std::list<IXPFPlugin*>& list = m_Helper->m_MsgSubscribes[topic][msgid];

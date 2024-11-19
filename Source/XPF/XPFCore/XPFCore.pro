@@ -9,6 +9,8 @@ CONFIG += c++11
 
 TARGET = XPF
 
+# DEFINES += OUT_ERR
+
 DESTDIR = $$PRODIR_BIN
 
 msvc {
@@ -26,7 +28,8 @@ CONFIG(debug, debug|release){
 
 HEADERS += \
     $$XPFDIR_INC/XPFCore/XPFCoreTopicDef.h \
-    ../Include/XPFCore/XPFGlobal.h \
+    $$XPFDIR_INC/XPFCore/XPFGlobal.h \
+    $$XPFDIR_INC/XPFComm/IXPFErrorException.h \
     XPFCore.h \
 
 
@@ -34,5 +37,8 @@ HEADERS += \
 SOURCES += main.cpp \
     XPFCore.cpp \
     XPFGlobal.cpp \
+
+QMAKE_POST_LINK += $$WINDEPLOY --dir \"$${PRODIR_BIN}\" --libdir \"$${PRODIR_BIN}\" \"$${DESTDIR}/$${TARGET}.exe\"
+
 
 
