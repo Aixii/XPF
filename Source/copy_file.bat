@@ -28,7 +28,6 @@ for /R "%D_PATH%" %%f in (xpf.exe) do (
     )
 )
 
-pause
 
 
 
