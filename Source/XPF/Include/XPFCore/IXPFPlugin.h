@@ -49,6 +49,20 @@ public:
      * @param sender 发送者
      */
     virtual void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) = 0;
+
+    /**
+     * @brief onMessage 消息处理
+     * @param topic 主题
+     * @param msgid 消息ID
+     * @param param 参数
+     * @param sender 发送者
+     */
+    virtual void onSyncMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
+        Q_UNUSED(topic)
+        Q_UNUSED(msgid)
+        Q_UNUSED(param)
+        Q_UNUSED(sender)
+    }
 };
 
 #define IXPFPlugin_IID "com.xpf.IXPFPlugin"

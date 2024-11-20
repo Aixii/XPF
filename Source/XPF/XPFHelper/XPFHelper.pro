@@ -32,4 +32,5 @@ SOURCES += \
     XPFPluginHelperImpl.cpp
 
 QMAKE_POST_LINK += xcopy /D /F /E /Y \"$${DESTDIR}/$${TARGET}.dll\" \"$${PRODIR_BIN}/\"
+QMAKE_POST_LINK += && $$WINDEPLOY --dir \"$${PRODIR_BIN}\" --libdir \"$${PRODIR_BIN}\" \"$${DESTDIR}/$${TARGET}.dll\"
 

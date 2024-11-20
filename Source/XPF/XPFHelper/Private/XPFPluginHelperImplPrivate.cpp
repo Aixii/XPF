@@ -13,6 +13,8 @@ using namespace XPF;
 
 XPFPluginHelperImplPrivate::XPFPluginHelperImplPrivate(QObject* parent)
     : QObject(parent) {
+    qRegisterMetaType<uint32_t>("uint32_t");
+
     m_ServicesMutex = new QMutex;
     m_MsgSendThread = new QThread(this);
     m_MsgSender     = new MessageSenderPrivate(this);
@@ -99,7 +101,7 @@ void XPFPluginHelperImplPrivate::sendSyncMessage(const QString& topic, uint32_t 
 
         std::list<IXPFPlugin*>& list = m_MsgSubscribes[topic][msgid];
         for (IXPFPlugin* plugin : list) {
-            plugin->onMessage(topic, msgid, param, sender);
+            plugin->onSyncMessage(topic, msgid, param, sender);
         }
     }
 }

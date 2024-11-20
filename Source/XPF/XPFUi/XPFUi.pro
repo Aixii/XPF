@@ -29,3 +29,4 @@ SOURCES += \
 
 FORMS +=
 
+QMAKE_POST_LINK += $$WINDEPLOY --dir \"$${PRODIR_BIN}\" --libdir \"$${PRODIR_BIN}\" \"$${DESTDIR}/$${TARGET}.dll\"

@@ -40,3 +40,4 @@ DESTDIR_LIB = $$PRODIR_LIB
 
 INCLUDEPATH += $$PRODIR_INC
 
+WINDEPLOY = "E:\Dev\Qt\6.8.0\msvc2022_64\bin\windeployqt.exe"

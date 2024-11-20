@@ -2,7 +2,11 @@
 #include "XPFCore.h"
 #include "XPFGlobal"
 #include <QApplication>
+<<<<<<< HEAD
 
+=======
+#include <QDateTime>
+>>>>>>> deacf7e61e24168fba03a9810876f8d2204baed6
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -53,6 +57,10 @@ static void debugHandler(QtMsgType type, const QMessageLogContext& context, cons
 }
 
 int main(int argc, char* argv[]) {
+<<<<<<< HEAD
+=======
+
+>>>>>>> deacf7e61e24168fba03a9810876f8d2204baed6
     SetUnhandledExceptionFilter(ExceptionFilter);
 
     QApplication app(argc, argv);
@@ -61,7 +69,7 @@ int main(int argc, char* argv[]) {
 
     log_prefix = time.toString("yyyyMMdd hh时mm分ss秒");
 
-    qInstallMessageHandler(debugHandler);
+    //    qInstallMessageHandler(debugHandler);
 
     XPFCore* core = new XPFCore;
 
@@ -87,7 +95,7 @@ int main(int argc, char* argv[]) {
     if (XPF::xpf_err_code != XPF::XPF_ERR_NONE) {
         QMessageBox box(QMessageBox::Critical,
                         QObject::tr(u8"错误"),
-                        XPF::xpf_err_msg);
+                        QString("%0 CODE: %1").arg(XPF::xpf_err_msg).arg(XPF::xpf_err_code));
         box.addButton(QObject::tr(u8"确认"), QMessageBox::YesRole);
         box.exec();
     }
