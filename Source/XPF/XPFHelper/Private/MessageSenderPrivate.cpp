@@ -20,9 +20,6 @@ void MessageSenderPrivate::slotSendAsyncMessage(const QString& topic, uint32_t m
         return;
     }
 
-    if (topic == "TOPIC_PICTURE_SAVE") {
-        qDebug() << "hh";
-    }
     if (m_Helper->m_MsgSubscribes.contains(topic) && m_Helper->m_MsgSubscribes[topic].contains(msgid)) {
         std::list<IXPFPlugin*>& list = m_Helper->m_MsgSubscribes[topic][msgid];
         for (IXPFPlugin* plugin : list) {

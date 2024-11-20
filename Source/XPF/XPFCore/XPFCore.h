@@ -89,7 +89,7 @@ public:
 
     QString getPluginName() override { return "xpfcore"; }
 
-    void initPlugin(IXPFPluginHelper* pluginHelper) override { Q_UNUSED(pluginHelper) }
+    void initPlugin(IXPFPluginHelper* pluginHelper) override;
     void initAfterPlugin() override { }
     void release() override { }
     void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;

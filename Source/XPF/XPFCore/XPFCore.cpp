@@ -409,6 +409,9 @@ bool XPFCore::registerPlugin(IXPFPlugin* plugin) {
 
         box.addButton(tr(u8"确认"), QMessageBox::YesRole);
     }
+    else {
+        initPlugin(m_XPFHelper);
+    }
     return true;
 }
 
@@ -451,11 +454,15 @@ void XPFCore::slotTrayIconActive(QSystemTrayIcon::ActivationReason reason) {
     }
 }
 
+void XPFCore::initPlugin(IXPFPluginHelper* pluginHelper) {
+    pluginHelper->subMessage(this, TOPIC_XPF_CORE, XPFCore_NameSpace::MSG_ID_QUIT_APP);
+}
+
 void XPFCore::onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) {
     Q_UNUSED(param)
     Q_UNUSED(sender)
     if (topic == TOPIC_XPF_CORE && msgid == XPFCore_NameSpace::MSG_ID_QUIT_APP) {
-        emit sigQuitApp();
+        quitApp();
     }
 }
 

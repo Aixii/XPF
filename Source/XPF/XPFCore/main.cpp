@@ -1,12 +1,8 @@
 ﻿#include "CrashException.h"
 #include "XPFCore.h"
 #include "XPFGlobal"
-#include <QApplication>
-<<<<<<< HEAD
 
-=======
-#include <QDateTime>
->>>>>>> deacf7e61e24168fba03a9810876f8d2204baed6
+#include <QApplication>
 #include <QDebug>
 #include <QDir>
 #include <QFile>
@@ -14,7 +10,6 @@
 #include <QMessageBox>
 #include <QString>
 #include <QTextStream>
-
 #include <QDateTime>
 
 #include <codecvt>
@@ -57,10 +52,7 @@ static void debugHandler(QtMsgType type, const QMessageLogContext& context, cons
 }
 
 int main(int argc, char* argv[]) {
-<<<<<<< HEAD
-=======
 
->>>>>>> deacf7e61e24168fba03a9810876f8d2204baed6
     SetUnhandledExceptionFilter(ExceptionFilter);
 
     QApplication app(argc, argv);
