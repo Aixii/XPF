@@ -6,7 +6,7 @@
     <AppScreens>
         <Screen size="800:600" fullscreen="true" note="size表示长宽比；fullscreen表示是否全屏；">
             <ID base="10">0</ID>
-            <Name>安全用具绝缘电阻测量操作系统</Name>
+            <Name>XPF</Name>
             <Icon>icon.png</Icon>
             <WidgetHeader height="30">header0</WidgetHeader>
             <WidgetBody>screen0</WidgetBody>

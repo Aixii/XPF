@@ -1,29 +1,22 @@
 ﻿<?xml version="1.0" encoding="UTF-8"?>
 <Window>
     <Widgets layout_orientation="vertical">
-        <!-- <Widget id="" name="" style=""/> -->
-<!--         <PluginWidget id="" plugin_name="" plugin_winid=""/> -->
-        <!--<TabWidget id="tabwidget" titles="aasdddddddddddddddddd:aaaaaaaaaaaaaaaaaab">
-            <Widget></Widget>
-            <Widget></Widget>
-        </TabWidget>-->
-        <!-- <Splitter id="" name="" stretch="2:10:20"/> -->
-        <StackWidget id="stackedwidget_main">
-            <PluginWidget id="loginwgt" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_LoginWgt"/>
-            <PluginWidget id="registerwgt" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_RegisterWgt"/>
-            <Widget id="mainwgt" stretches="0,1">
-                <PluginWidget id="menuheaderwgt" plugin_name="IRMenuHeaderPlugin" plugin_winid="IR_MenuHeaderWgt"/>
-                <StackWidget id="stackedwidget_center">
-                    <PluginWidget id="testmainpage" plugin_name="IRTestMainPagePlugin" plugin_winid="IR_TestMainWgt"/>
-                    <PluginWidget id="usermanagepage" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_UserManageWgt"/>
-                    <PluginWidget id="databrowerpage" plugin_name="IRDeviceDataManagerPlugin" plugin_winid="IR_DataBrower"/>
-                    <PluginWidget id="deviceinfopage" plugin_name="IRDeviceDataManagerPlugin" plugin_winid="IR_DeviceInfo"/>
-                </StackWidget>
-            </Widget>
+        <StackWidget>
+            <TabWidget id="tabwidget" titles="Tab1:Tab2">
+                <Widget>
+                    <Splitter id="" name="" stretch="2:10:20">
+                        <Widget></Widget>
+                        <Widget></Widget>
+                        <Widget></Widget>
+                    </Splitter>
+                </Widget>
+                <Widget>
+
+                </Widget>
+            </TabWidget>
         </StackWidget>
     </Widgets>
     <Popups>
-        <Popup id="settingdialog" title="设置" modal="true" plugin_name="IRSettingUiPlugin" plugin_winid="IR_SettingDialog" />
-        <Popup id="userdetaildialog" title="用户详细信息" modal="true" plugin_name="IRAccountManagerPlugin" plugin_winid="IR_UserDetailDialog" />
+        <Popup id="settingdialog" title="xxx" modal="true" plugin_name="xxx" plugin_winid="xxx" />
     </Popups>
 </Window>

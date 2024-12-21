@@ -1,11 +1,17 @@
 ﻿#include "TrayIconRClickWgt.h"
-#include <IXPFPluginHelper>
-#include <XPFCoreTopicDef>
 #include "ui_TrayIconRClickWgt.h"
+#include <IXPFPluginHelper>
 #include <QEvent>
 #include <QFocusEvent>
 #include <QLabel>
 #include <QMouseEvent>
+#include <XPFCoreTopicDef>
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+#include <QRegularExpression>
+#else
+#include <QRegExp>
+#endif
 
 extern IXPFPluginHelper* g_pPluginHelper;
 
@@ -76,22 +82,34 @@ bool TrayIconRClickWgt::eventFilter(QObject* watched, QEvent* event) {
         if (mouseEvent->button() == Qt::LeftButton) {
             QLabel* label = qobject_cast<QLabel*>(watched);
             if (label) {
-                QRegExp reg("^(screen_)\\d+");
                 if (label->objectName() == "quit") {
                     g_pPluginHelper->sendSyncMessage(TOPIC_XPF_CORE, XPFCore_NameSpace::MSG_ID_QUIT_APP);
                 }
-                else if (reg.exactMatch(label->objectName())) {
-                    int id = label->property("ID").toInt();
+                else {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                    QRegularExpression reg("(\\d+):(\\d+)");
 
-                    QWidget* widget = g_pPluginHelper->getXPFScreenWidget(id);
-                    if (widget != nullptr) {
-                        widget->activateWindow();
-                        widget->show();
+                    QRegularExpressionMatch match = reg.match(label->objectName());
+
+                    bool hasMatch = match.hasMatch();
+#else
+                    QRegExp reg("^(screen_)\\d+");
+
+                    bool hasMatch = reg.exactMatch(label->objectName());
+#endif
+                    if (hasMatch) {
+                        int id = label->property("ID").toInt();
+
+                        QWidget* widget = g_pPluginHelper->getXPFScreenWidget(id);
+                        if (widget != nullptr) {
+                            widget->activateWindow();
+                            widget->show();
+                        }
+                        this->close();
                     }
-                    this->close();
                 }
             }
-        }
+        } // LeftButton
     }
     return QWidget::eventFilter(watched, event);
 }

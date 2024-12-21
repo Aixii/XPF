@@ -22,8 +22,7 @@ void XPFUiPlugin::initAfterPlugin() {
 }
 
 QWidget* XPFUiPlugin::getWidget(const QString& WID) {
-    QString path = QString("%0/XPFUi/%1.xml")
-                       .arg(g_pPluginHelper->getXPFBinConfigDir())
+    QString path = QString("xpfconfig/XPFUi/%1.xml")
                        .arg(WID);
     QWidget* widget = XPFUiTool::generateWidget(path);
     return widget;

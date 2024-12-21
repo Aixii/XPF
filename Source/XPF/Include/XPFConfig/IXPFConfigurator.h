@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <QString>
 #include <QVariant>
@@ -10,5 +10,8 @@ public:
 
     virtual QVariant getConfigItem(const QString& config_key) = 0;
 
-    virtual void setConfigItem(const QString& config_key, const QVariant& var) = 0;
+    virtual void setConfigItem(const QString& config_key, const QVariant& var) {
+        Q_UNUSED(config_key)
+        Q_UNUSED(var)
+    }
 };

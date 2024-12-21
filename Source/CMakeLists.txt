@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.5) 
 
-project(IR_Analysis) 
+project(2CTunnel) 
 
 set(CMAKE_BUILD_TYPE "Release")
 
@@ -34,14 +34,7 @@ set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(${PROINCDIR})
-#include_directories(${PROINCDIR}/Define)
-#include_directories(${PROINCDIR}/Service)
 
-#add_subdirectory(PROLauncher)
-#add_subdirectory(PROCore)
-#add_subdirectory(PROUi)
-#add_subdirectory(PROTrayMenuPlugin)
-#add_subdirectory(PROConfigs)
 add_subdirectory(QXlsx)
 add_subdirectory(XPF)
 add_subdirectory(Plugins)

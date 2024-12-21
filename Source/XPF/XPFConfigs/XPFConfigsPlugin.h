@@ -1,6 +1,8 @@
 ﻿#ifndef XPFUIPLUGIN_H
 #define XPFUIPLUGIN_H
 
+#include "XPFConfigServiceImpl.h"
+#include "XPFCoreConfigurator.h"
 #include <IXPFPlugin>
 #include <QObject>
 
@@ -23,5 +25,9 @@ public:
 
     QWidget* getWidget(const QString& WID) override;
     QString  getPluginName() override;
+
+private:
+    XPFConfigServiceImpl* m_ConfigService;
+    XPFCoreConfigurator*  m_CoreConfigurator;
 };
 #endif // XPFUIPLUGIN_H

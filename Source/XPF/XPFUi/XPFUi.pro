@@ -1,5 +1,3 @@
-
-
 QT += core gui xml network
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,3 +29,4 @@ SOURCES += \
 
 FORMS +=
 
+QMAKE_POST_LINK += $$WINDEPLOY --dir \"$${PRODIR_BIN}\" --libdir \"$${PRODIR_BIN}\" \"$${DESTDIR}/$${TARGET}.dll\"

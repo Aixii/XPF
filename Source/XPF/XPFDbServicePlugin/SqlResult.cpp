@@ -14,7 +14,7 @@ SqlResult::SqlResult(QObject* parent)
 SqlResult::~SqlResult() {
 }
 
-void SqlResult::readFromQSqlQuery(QSqlQuery query) {
+void SqlResult::readFromQSqlQuery(QSqlQuery& query) {
     d->m_datas.clear();
     d->m_fields.clear();
 
@@ -48,7 +48,7 @@ void SqlResult::readFromQSqlQuery(QSqlQuery query) {
     }
 }
 
-void SqlResult::readFromQSqlDataBase(QSqlDatabase db) {
+void SqlResult::readFromQSqlDataBase(QSqlDatabase& db) {
     if (db.lastError().type() != QSqlError::NoError) {
         d->setError(db.lastError());
     }
@@ -108,12 +108,11 @@ bool SqlResult::isValid() {
     return d->m_valid;
 }
 
-int SqlResult::errorType(){
+int SqlResult::errorType() {
     return d->m_error.type();
 }
 
-QString SqlResult::errorText()
-{
+QString SqlResult::errorText() {
     return d->m_error.text();
 }
 

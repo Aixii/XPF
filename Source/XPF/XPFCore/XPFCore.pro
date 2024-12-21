@@ -9,6 +9,8 @@ CONFIG += c++11
 
 TARGET = XPF
 
+# DEFINES += OUT_ERR
+
 DESTDIR = $$PRODIR_BIN
 
 msvc {
@@ -16,18 +18,27 @@ QMAKE_CFLAGS += /utf-8
 QMAKE_CXXFLAGS += /utf-8
 }
 
+CONFIG(debug, debug|release){
+    TARGET = XPFd
+    LIBS += -L$$PRODIR_LIB -lXPFHelperd
+} else {
+    TARGET = XPF
+    LIBS += -L$$PRODIR_LIB -lXPFHelper
+}
+
 HEADERS += \
     $$XPFDIR_INC/XPFCore/XPFCoreTopicDef.h \
-    Private/MessageSenderPrivate.h \
-    Private/XPFPluginHelperImplPrivate.h \
+    $$XPFDIR_INC/XPFCore/XPFGlobal.h \
+    $$XPFDIR_INC/XPFComm/IXPFErrorException.h \
     XPFCore.h \
-    XPFPluginHelperImpl.h \
+
 
 
 SOURCES += main.cpp \
-    Private/MessageSenderPrivate.cpp \
-    Private/XPFPluginHelperImplPrivate.cpp \
     XPFCore.cpp \
     XPFGlobal.cpp \
-    XPFPluginHelperImpl.cpp \
+
+QMAKE_POST_LINK += $$WINDEPLOY --dir \"$${PRODIR_BIN}\" --libdir \"$${PRODIR_BIN}\" \"$${DESTDIR}/$${TARGET}.exe\"
+
+
 

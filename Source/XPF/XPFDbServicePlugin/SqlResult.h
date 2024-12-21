@@ -1,22 +1,23 @@
 ﻿#ifndef SQLRESULT_H
 #define SQLRESULT_H
 
-#include <QObject>
 #include <ISqlResult>
+#include <QObject>
 
 class QSqlError;
 class QSqlQuery;
 class QSqlDatabase;
 class SqlResultPrivate;
 
-class Q_DECL_EXPORT SqlResult : public QObject, public ISqlResult {
+class Q_DECL_EXPORT SqlResult : public QObject
+    , public ISqlResult {
     Q_OBJECT
 public:
     explicit SqlResult(QObject* parent = nullptr);
     ~SqlResult();
 
-    void readFromQSqlQuery(QSqlQuery query);
-    void readFromQSqlDataBase(QSqlDatabase db);
+    void readFromQSqlQuery(QSqlQuery& query);
+    void readFromQSqlDataBase(QSqlDatabase& db);
 
     int fieldsCount();
 
@@ -33,14 +34,13 @@ public:
     bool isEmpty();
     bool isValid();
 
-    int errorType();
+    int     errorType();
     QString errorText();
 
     static SqlResult* fromQSqlQuery(QSqlQuery query);
 
 private:
     SqlResultPrivate* d;
-
 };
 
 #endif // SQLRESULT_H

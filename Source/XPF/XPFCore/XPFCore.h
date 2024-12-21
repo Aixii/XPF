@@ -5,18 +5,21 @@
 #include <IXPFPluginHelper>
 #include <QDomElement>
 #include <QLibrary>
-#include <QLinkedList>
 #include <QLocalServer>
 #include <QMap>
 #include <QPluginLoader>
 #include <QSystemTrayIcon>
 #include <QVariant>
+#include <list>
 
-#define STR_XPF_APPNAME "AppName"
+#define STR_XPF_APPNAME           "AppName"
 #define STR_XPF_MULTISTART_ENABLE "MultiStart"
 
-class XPFCore : public QObject {
+class XPFCore : public QObject
+    , public IXPFPlugin {
     Q_OBJECT
+    Q_INTERFACES(IXPFPlugin)
+    Q_PLUGIN_METADATA(IID IXPFPlugin_IID)
 public:
     explicit XPFCore(QObject* parent = nullptr);
     virtual ~XPFCore();
@@ -41,29 +44,28 @@ private:
     bool isAlreadyRunning();
 
     /**
-     * @brief parseScreenXml 解析屏幕相关配置
-     * @param em 配置元素
-     * @return 配置是否有错误
-     */
-    bool parseScreenXml(const QDomElement& em);
-
-    /**
      * @brief loadPlugins 加载插件
      */
-    void loadPlugins();
+    bool loadPlugins();
 
     // 应用程序启动加载
-    bool load(const QString& fileName);
+    bool load();
 
     void reloadPlugin(const QString& pluginName);
     void unloadPlugin(const QString& pluginName);
+
+    bool registerPlugin(IXPFPlugin* plugin);
+    void unregisterPlugin(IXPFPlugin* plugin);
+
+    bool registerScreen(QWidget* screen);
 
 private:
     // 应用配置
     QVariantMap m_Config;
     // 所有的插件
-    QMap<QString, IXPFPlugin*> m_Plugins;
-    QList<IXPFPlugin*>         m_PluginsSort;
+    //    QMap<QString, IXPFPlugin*> m_Plugins;
+
+    QList<IXPFPlugin*> m_PluginsSort;
 
     // 插件加载器
     QMap<QString, QPluginLoader*> m_PluginLoaders;
@@ -74,6 +76,23 @@ private:
     QLocalServer* m_LocalServer;
 
     QSystemTrayIcon* m_TrayIcon;
+
+private slots:
+    void slotTrayIconActive(QSystemTrayIcon::ActivationReason reason);
+
+    // IXPFPlugin interface
+public:
+    QWidget* getWidget(const QString& WID) override {
+        Q_UNUSED(WID)
+        return nullptr;
+    }
+
+    QString getPluginName() override { return "xpfcore"; }
+
+    void initPlugin(IXPFPluginHelper* pluginHelper) override;
+    void initAfterPlugin() override { }
+    void release() override { }
+    void onMessage(const QString& topic, uint32_t msgid, const QVariant& param, IXPFPlugin* sender) override;
 };
 
 #endif // XPFCORE_H

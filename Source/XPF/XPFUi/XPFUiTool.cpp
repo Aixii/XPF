@@ -35,10 +35,10 @@ QWidget* XPFUiTool::generateWidget(const QString& fileName) {
 
         QDomElement mainElement = root.firstChildElement("Widgets");
         if (mainElement.isNull()) {
-            QMessageBox::warning(nullptr,
-                                 QObject::tr(u8"警告"),
-                                 QObject::tr(u8"%1格式错误"),
-                                 QObject::tr(u8"知道了"));
+            // QMessageBox::warning(nullptr,
+            //                      QObject::tr(u8"警告"),
+            //                      QObject::tr(u8"%1格式错误"),
+            //                      QObject::tr(u8"知道了"));
             break;
         }
 
@@ -161,14 +161,17 @@ QSplitter* XPFUiTool::createSplitterWidget(const QDomElement& em) {
         cw->setParent(splitter);
 
         splitter->addWidget(cw);
-        int stretch = 0;
-        if (index < list.size()) {
-            stretch = QString(list.at(index)).toUInt();
-        }
-        splitter->setStretchFactor(index, stretch);
         index++;
         node = node.nextSibling();
     }
+
+    QList<int> sizes;
+    for (int i = 0; i < list.size() && i < index; i++) {
+        int s = list.at(i).toUInt();
+        sizes.append(s);
+    }
+
+    splitter->setSizes(sizes);
     return splitter;
 }
 
@@ -260,7 +263,13 @@ QDialog* XPFUiTool::createDialog(const QDomElement& em) {
     }
     QWidget* content = g_pPluginHelper->getXPFWidgetByPlugin(pluginName, pluginWinID);
     if (content == nullptr) {
-        QMessageBox::critical(nullptr, u8"错误", QString(u8"无法加载UI, pluginName: %0, winID: %1").arg(pluginName).arg(pluginWinID), u8"确认");
+        QMessageBox* msgBox = new QMessageBox(QMessageBox::Critical, QObject::tr("错误"),
+                                              QString(QObject::tr(u8"无法加载UI, pluginName: %0, winID: %1")).arg(pluginName).arg(pluginWinID),
+                                              QMessageBox::Ok);
+
+        msgBox->button(QMessageBox::Ok)->setText(QObject::tr(u8"确定"));
+        msgBox->exec();
+        msgBox->deleteLater();
         return dialog;
     }
 
